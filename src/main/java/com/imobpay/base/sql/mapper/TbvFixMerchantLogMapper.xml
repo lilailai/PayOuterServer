@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvFixMerchantLogDao">
+
+
+	<sql id="paramSql">
+		<!-- 此处一定要增加一个查询 -->
+		<if test="agencyId !=null and agencyId !=''">
+			AND AGENCY_ID = #{agencyId}
+		</if>
+		<if test="orderid !=null and orderid !=''">
+			AND ORDERID = #{orderid}
+		</if>
+		<if test="restime !=null and restime !=''">
+			AND RESTIME = #{restime}
+		</if>
+		<if test="reqtime !=null and reqtime !=''">
+			AND REQTIME = #{reqtime}
+		</if>
+		<if test="merchantcode !=null and merchantcode !=''">
+			AND MERCHANTCODE = #{merchantcode}
+		</if>
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.TbvFixMerchantLog"
+		id="paramIdTbvFixMerchantLog">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="agencyId" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="orderid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="restime" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="reqtime" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="merchantcode" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvFixMerchantLog"
+		id="resultTbTbvFixMerchantLog">
+		<result column="AGENCY_ID" property="agencyId" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="ORDERID" property="orderid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="RESTIME" property="restime" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="REQTIME" property="reqtime" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MERCHANTCODE" property="merchantcode" javaType="String"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvFixMerchantLog"
+		resultMap="resultTbTbvFixMerchantLog">
+		SELECT * FROM TBV_FIX_MERCHANT_LOG WHERE ROWNUM = 1
+		<include refid="paramSql"></include>
+	</select>
+
+	<select id="list" parameterMap="paramIdTbvFixMerchantLog"
+		resultMap="resultTbTbvFixMerchantLog">
+		<if test="pageflag==true">
+			SELECT * FROM (
+			SELECT A.*, ROWNUM RN FROM
+			(
+			SELECT * FROM TBV_FIX_MERCHANT_LOG WHERE 1=1
+			<include refid="paramSql"></include>
+			) A WHERE ROWNUM &lt;= #{curPage}*#{pageSize}
+			) WHERE RN &gt;=
+			(#{curPage}-1)*#{pageSize}
+		</if>
+		<if test="pageBlag==false">
+			SELECT * FROM TBV_FIX_MERCHANT_LOG
+			WHERE 1=1
+			<include refid="paramSql"></include>
+		</if>
+	</select>
+
+
+
+	<!-- 添加 -->
+	<insert id="insert" parameterMap="paramIdTbvFixMerchantLog"
+		timeout="1000">
+		INSERT INTO
+		TBV_FIX_MERCHANT_LOG(
+		AGENCY_ID,
+		ORDERID,
+		RESTIME,
+		REQTIME,
+		MERCHANTCODE)VALUES(#{agencyId,jdbcType=VARCHAR},
+		#{orderid,jdbcType=VARCHAR},
+		#{restime,jdbcType=VARCHAR},
+		#{reqtime,jdbcType=VARCHAR},
+		#{merchantcode,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="update" timeout="1000">
+		UPDATE TBV_FIX_MERCHANT_LOG
+		SET RESTIME = #{restime,jdbcType=VARCHAR}
+		WHERE AGENCY_ID = #{agencyId}
+		AND MERCHANTCODE = #{merchantcode}
+	</update>
+
+</mapper>

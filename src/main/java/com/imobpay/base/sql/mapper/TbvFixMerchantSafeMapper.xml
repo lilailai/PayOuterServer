@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvFixMerchantSafeDao">
+	<sql id="paramSql">
+		
+		<if test="merchantid !=null and merchantid !=''">
+			AND MERCHANTID =  #{merchantid}
+		</if>
+		
+		<if test="agencyId !=null and agencyId !=''">
+			AND AGENCY_ID =  #{agencyId}
+		</if>
+		
+		<if test="status !=null and status !=''">
+			AND STATUS =  #{status}
+		</if>
+		
+		<if test="id !=null and id !=''">
+			AND ID =  #{id}
+		</if>
+	</sql>
+	
+	<parameterMap type="com.imobpay.base.entity.TbvFixMerchantSafe" id="paramIdTbvFixMerchantSafe">
+		<parameter property="pageflag"  javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage"   javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize"  javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="extdes3key" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="merchantid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="exttoken" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="agencyId" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="byteiv" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="createdate" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="id" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvFixMerchantSafe" id="resultTbTbvFixMerchantSafe">
+		<result column="EXTDES3KEY" property="extdes3key" javaType="String" jdbcType="VARCHAR" />
+		<result column="MERCHANTID" property="merchantid" javaType="String" jdbcType="VARCHAR" />
+		<result column="EXTTOKEN" property="exttoken" javaType="String" jdbcType="VARCHAR" />
+		<result column="AGENCY_ID" property="agencyId" javaType="String" jdbcType="VARCHAR" />
+		<result column="BYTEIV" property="byteiv" javaType="String" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="CREATEDATE" property="createdate" javaType="String" jdbcType="VARCHAR" />
+		<result column="ID" property="id" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvFixMerchantSafe" resultMap="resultTbTbvFixMerchantSafe">
+		SELECT * FROM TBV_FIX_MERCHANT_SAFE WHERE  ROWNUM = 1  
+		<include refid="paramSql"></include>
+	</select>
+	
+</mapper>

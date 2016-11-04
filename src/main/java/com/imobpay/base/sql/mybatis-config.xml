@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC
+"-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<mappers>
+		<mapper resource="com/imobpay/base/sql/mapper/TbvBranchParamMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvPayjnlsMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvSysParamMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvFixMerchantSafeMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/PayproductMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvFixMerchantLogMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvOutsideOrderMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvCustomerMapper.xml" />
+	</mappers>
+</configuration>

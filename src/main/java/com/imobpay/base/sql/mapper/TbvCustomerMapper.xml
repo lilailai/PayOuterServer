@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvCustomerDao">
+
+	
+	<sql id="paramSql">
+		<!--  此处一定要增加一个查询 -->
+		<if test="region !=null and region !=''">
+			AND REGION =  #{region}
+		</if>
+		<if test="status !=null and status !=''">
+			AND STATUS =  #{status}
+		</if>
+		<if test="openid !=null and openid !=''">
+			AND OPENID =  #{openid}
+		</if>
+		<if test="branchid !=null and branchid !=''">
+			AND BRANCHID =  #{branchid}
+		</if>
+		<if test="latitude !=null and latitude !=''">
+			AND LATITUDE =  #{latitude}
+		</if>
+		<if test="shopname !=null and shopname !=''">
+			AND SHOPNAME =  #{shopname}
+		</if>
+		<if test="mainBus !=null and mainBus !=''">
+			AND MAIN_BUS =  #{mainBus}
+		</if>
+		<if test="province !=null and province !=''">
+			AND PROVINCE =  #{province}
+		</if>
+		<if test="city !=null and city !=''">
+			AND CITY =  #{city}
+		</if>
+		<if test="customerregdate !=null and customerregdate !=''">
+			AND CUSTOMERREGDATE =  #{customerregdate}
+		</if>
+		<if test="address !=null and address !=''">
+			AND ADDRESS =  #{address}
+		</if>
+		<if test="ip !=null and ip !=''">
+			AND IP =  #{ip}
+		</if>
+		<if test="longitude !=null and longitude !=''">
+			AND LONGITUDE =  #{longitude}
+		</if>
+		<if test="taaccount !=null and taaccount !=''">
+			AND TAACCOUNT =  #{taaccount}
+		</if>
+		<if test="customerpid !=null and customerpid !=''">
+			AND CUSTOMERPID =  #{customerpid}
+		</if>
+		<if test="username !=null and username !=''">
+			AND USERNAME =  #{username}
+		</if>
+		<if test="mobile !=null and mobile !=''">
+			AND MOBILE =  #{mobile}
+		</if>
+		<if test="tid !=null and tid !=''">
+			AND TID =  #{tid}
+		</if>
+	</sql>
+	
+	<parameterMap type="com.imobpay.base.entity.TbvCustomer" id="paramIdTbvCustomer">
+		<parameter property="pageflag"  javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage"   javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize"  javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="region" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="openid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="branchid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="latitude" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="shopname" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="mainBus" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="province" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="city" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="customerregdate" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="address" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="ip" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="longitude" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="taaccount" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="customerpid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="username" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="mobile" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="tid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvCustomer" id="resultTbTbvCustomer">
+		<result column="REGION" property="region" javaType="String" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="OPENID" property="openid" javaType="String" jdbcType="VARCHAR" />
+		<result column="BRANCHID" property="branchid" javaType="String" jdbcType="VARCHAR" />
+		<result column="LATITUDE" property="latitude" javaType="String" jdbcType="VARCHAR" />
+		<result column="SHOPNAME" property="shopname" javaType="String" jdbcType="VARCHAR" />
+		<result column="MAIN_BUS" property="mainBus" javaType="String" jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" javaType="String" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" javaType="String" jdbcType="VARCHAR" />
+		<result column="CUSTOMERREGDATE" property="customerregdate" javaType="String" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" javaType="String" jdbcType="VARCHAR" />
+		<result column="IP" property="ip" javaType="String" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" javaType="String" jdbcType="VARCHAR" />
+		<result column="TAACCOUNT" property="taaccount" javaType="String" jdbcType="VARCHAR" />
+		<result column="CUSTOMERPID" property="customerpid" javaType="String" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="username" javaType="String" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" javaType="String" jdbcType="VARCHAR" />
+		<result column="TID" property="tid" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvCustomer" resultMap="resultTbTbvCustomer">
+		SELECT * FROM TBV_CUSTOMER WHERE  ROWNUM = 1  
+		<include refid="paramSql"></include>
+	</select>
+	
+</mapper>

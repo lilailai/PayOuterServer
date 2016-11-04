@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvPayjnlsDao">
+
+	<parameterMap type="com.imobpay.base.entity.TbvPayjnls"
+		id="paramIdTbvPayjnls">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="feeid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="longitude" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="msgcode" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="msgtext" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="branchid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="merchantname" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="merchantid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="latitude" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="ip" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="localdate" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="localtime" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="locallogno" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="tid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="taaccount" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="mobile" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="accountno" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="paytype" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="amount" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="fee" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="issuingAmount" javaType="Integer"
+			jdbcType="NUMERIC" mode="IN" />
+		<parameter property="orderId" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="servcode" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvPayjnls" id="resultTbTbvPayjnls">
+		<result column="FEEID" property="feeid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MSGCODE" property="msgcode" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MSGTEXT" property="msgtext" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="BRANCHID" property="branchid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MERCHANTNAME" property="merchantname" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MERCHANTID" property="merchantid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="LATITUDE" property="latitude" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="IP" property="ip" javaType="String" jdbcType="VARCHAR" />
+		<result column="LOCALDATE" property="localdate" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="LOCALTIME" property="localtime" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="LOCALLOGNO" property="locallogno" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="TID" property="tid" javaType="String" jdbcType="VARCHAR" />
+		<result column="TAACCOUNT" property="taaccount" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="ACCOUNTNO" property="accountno" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="PAYTYPE" property="paytype" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" javaType="Integer"
+			jdbcType="NUMERIC" />
+		<result column="FEE" property="fee" javaType="Integer"
+			jdbcType="NUMERIC" />
+		<result column="ISSUING_AMOUNT" property="issuingAmount"
+			javaType="Integer" jdbcType="NUMERIC" />
+		<result column="ORDER_ID" property="orderId" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="SERVCODE" property="servcode" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="OPENID" property="openid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="FDFEE" property="fdfee" javaType="String"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvPayjnls"
+		resultMap="resultTbTbvPayjnls">
+		SELECT
+		TP.FEE,TP.AMOUNT,TP.TAACCOUNT,TP.LOCALDATE,TP.LOCALTIME,TC.OPENID,TP.TID,TP.ACCOUNTNO,TP.ISSUING_AMOUNT,TD.FD_FEE,TP.PAYTYPE,TP.BRANCHID
+		FROM TBV_PAYJNLS TP
+		INNER JOIN TBV_CUSTOMER TC ON TP.TID = TC.TID
+		LEFT JOIN qtfund.tdflist TD ON TP.LOCALDATE = TD.FS_ORIGDATE
+		AND TP.LOCALTIME = TD.FS_ORIGTIME AND TP.ORDER_ID = TD.FS_ORIGSEQNO
+		WHERE TP.ORDER_ID = ?
+	</select>
+
+</mapper>

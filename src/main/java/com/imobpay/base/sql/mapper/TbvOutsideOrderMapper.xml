@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvOutsideOrderDao">
+
+	
+	<sql id="paramSql">
+		<!--  此处一定要增加一个查询 -->
+		<if test="customerid !=null and customerid !=''">
+			AND CUSTOMERID =  #{customerid}
+		</if>
+		<if test="issusingAmount !=null and issusingAmount !=''">
+			AND ISSUSING_AMOUNT =  #{issusingAmount}
+		</if>
+		<if test="orderDate !=null and orderDate !=''">
+			AND ORDER_DATE =  #{orderDate}
+		</if>
+		<if test="orderTime !=null and orderTime !=''">
+			AND ORDER_TIME =  #{orderTime}
+		</if>
+		<if test="url !=null and url !=''">
+			AND URL =  #{url}
+		</if>
+		<if test="orderAmount !=null and orderAmount !=''">
+			AND ORDER_AMOUNT =  #{orderAmount}
+		</if>
+		<if test="fee !=null and fee !=''">
+			AND FEE =  #{fee}
+		</if>
+		<if test="outsideOrderId !=null and outsideOrderId !=''">
+			AND OUTSIDE_ORDER_ID =  #{outsideOrderId}
+		</if>
+		<if test="orderId !=null and orderId !=''">
+			AND ORDER_ID =  #{orderId}
+		</if>
+	</sql>
+	
+	<parameterMap type="com.imobpay.base.entity.TbvOutsideOrder" id="paramIdTbvOutsideOrder">
+		<parameter property="pageflag"  javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage"   javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize"  javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="customerid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="issusingAmount" javaType="Integer" jdbcType="NUMERIC" mode="IN"   />
+		<parameter property="orderDate" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="orderTime" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="url" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="orderAmount" javaType="Integer" jdbcType="NUMERIC" mode="IN"   />
+		<parameter property="fee" javaType="Integer" jdbcType="NUMERIC" mode="IN"   />
+		<parameter property="outsideOrderId" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="orderId" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvOutsideOrder" id="resultTbTbvOutsideOrder">
+		<result column="CUSTOMERID" property="customerid" javaType="String" jdbcType="VARCHAR" />
+		<result column="ISSUSING_AMOUNT" property="issusingAmount" javaType="Integer" jdbcType="NUMERIC" />
+		<result column="ORDER_DATE" property="orderDate" javaType="String" jdbcType="VARCHAR" />
+		<result column="ORDER_TIME" property="orderTime" javaType="String" jdbcType="VARCHAR" />
+		<result column="URL" property="url" javaType="String" jdbcType="VARCHAR" />
+		<result column="ORDER_AMOUNT" property="orderAmount" javaType="Integer" jdbcType="NUMERIC" />
+		<result column="FEE" property="fee" javaType="Integer" jdbcType="NUMERIC" />
+		<result column="OUTSIDE_ORDER_ID" property="outsideOrderId" javaType="String" jdbcType="VARCHAR" />
+		<result column="ORDER_ID" property="orderId" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvOutsideOrder" resultMap="resultTbTbvOutsideOrder">
+		SELECT * FROM TBV_OUTSIDE_ORDER WHERE  ROWNUM = 1  
+		<include refid="paramSql"></include>
+	</select>
+	
+	<select id="list" parameterMap="paramIdTbvOutsideOrder" resultMap="resultTbTbvOutsideOrder">
+		<if test="pageflag==true">
+			SELECT * FROM (
+				SELECT A.*, ROWNUM RN FROM
+				(
+					SELECT * FROM TBV_OUTSIDE_ORDER WHERE 1=1
+					<include refid="paramSql"></include>
+				) A WHERE ROWNUM &lt;= #{curPage}*#{pageSize}
+				) WHERE RN  &gt;=
+			(#{curPage}-1)*#{pageSize}
+		</if>
+		<if test="pageBlag==false">
+			SELECT * FROM TBV_OUTSIDE_ORDER
+			WHERE 1=1
+			<include refid="paramSql"></include>
+		</if>
+	</select>
+	
+	<select id="listCount" parameterMap="paramIdTbvOutsideOrder" resultType="Integer">
+				SELECT count(1) as count FROM TBV_OUTSIDE_ORDER
+				WHERE 1=1 
+				<include refid="paramSql"></include>
+	</select>
+	
+	<!-- 添加 -->
+	<insert id="insert" parameterMap="paramIdTbvOutsideOrder" timeout="1000"  >
+		INSERT INTO 
+		TBV_OUTSIDE_ORDER(
+CUSTOMERID,
+		ISSUSING_AMOUNT,
+		ORDER_DATE,
+		ORDER_TIME,
+		URL,
+		ORDER_AMOUNT,
+		FEE,
+		OUTSIDE_ORDER_ID,
+				ORDER_ID
+		
+		)
+		VALUES(		#{customerid},
+				#{issusingAmount},
+				#{orderDate},
+				#{orderTime},
+				#{url},
+				#{orderAmount},
+				#{fee},
+				#{outsideOrderId},
+		
+#{orderId})
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update"  timeout="1000" >
+		UPDATE TBV_OUTSIDE_ORDER 
+		<trim prefix="SET" prefixOverrides="SET ,">
+		<if test="customerid !=null and customerid !=''">
+			,CUSTOMERID = #{customerid}  
+		</if>
+		<if test="issusingAmount !=null and issusingAmount !=''">
+			,ISSUSING_AMOUNT = #{issusingAmount}  
+		</if>
+		<if test="orderDate !=null and orderDate !=''">
+			,ORDER_DATE = #{orderDate}  
+		</if>
+		<if test="orderTime !=null and orderTime !=''">
+			,ORDER_TIME = #{orderTime}  
+		</if>
+		<if test="url !=null and url !=''">
+			,URL = #{url}  
+		</if>
+		<if test="orderAmount !=null and orderAmount !=''">
+			,ORDER_AMOUNT = #{orderAmount}  
+		</if>
+		<if test="fee !=null and fee !=''">
+			,FEE = #{fee}  
+		</if>
+		<if test="outsideOrderId !=null and outsideOrderId !=''">
+			,OUTSIDE_ORDER_ID = #{outsideOrderId}  
+		</if>
+		<if test="orderId !=null and orderId !=''">
+			,ORDER_ID = #{orderId}  
+		</if>
+		</trim>
+		WHERE 1=1
+		<include refid="paramSql"></include>
+	</update>
+	
+</mapper>

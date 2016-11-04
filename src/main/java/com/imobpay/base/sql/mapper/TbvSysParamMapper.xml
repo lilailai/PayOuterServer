@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvSysParamDao">
+
+	
+	<sql id="paramSql">
+		<if test="paramname !=null and paramname !=''">
+			AND PARAMNAME =  #{paramname}
+		</if>
+	</sql>
+	
+	<parameterMap type="com.imobpay.base.entity.TbvSysParam" id="paramIdTbvSysParam">
+		<parameter property="pageflag"  javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage"   javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize"  javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="paramvalue" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="paramdesc" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="paramname" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvSysParam" id="resultTbTbvSysParam">
+		<result column="PARAMVALUE" property="paramvalue" javaType="String" jdbcType="VARCHAR" />
+		<result column="PARAMDESC" property="paramdesc" javaType="String" jdbcType="VARCHAR" />
+		<result column="PARAMNAME" property="paramname" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvSysParam" resultMap="resultTbTbvSysParam">
+		SELECT * FROM TBV_SYS_PARAM WHERE  ROWNUM = 1  
+		<include refid="paramSql"></include>
+	</select>
+		
+</mapper>

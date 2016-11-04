@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://code.alibabatech.com/schema/dubbo  
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 设置tibco 连接地址 -->
+	<bean id="targetConnectionFactory" class="com.tibco.tibjms.TibjmsConnectionFactory">
+		<property name="serverUrl" value="${tibco_url}" />
+	</bean>
+	<!-- 设置用户名密码 -->
+
+	<bean id="connectionFactory" class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter">
+		<property name="targetConnectionFactory" ref="targetConnectionFactory" />
+		<property name="username" value="${tibco_userName}" />
+		<property name="password" value="${tibco_pwd}" />
+	</bean>
+	<!-- 把jms设置成多例模式 方便取出jmsTempLate 只需要设置队列名字收发即可 scope="prototype" -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" scope="prototype">
+		<property name="connectionFactory" ref="connectionFactory" />
+	</bean>
+	<!-- 设置队列监听名称 -->
+
+	<bean id="queueDestination" class="com.tibco.tibjms.TibjmsQueue">
+		<constructor-arg value="${tibco_wexin_in}" />
+	</bean>
+	<!-- 设置队列监听 -->
+
+	<bean id="consumerMessageListener" class="com.imobpay.base.services.ConsumerMessageListener">
+		<property name="sendTibcoOutName" value="${tibco_wexin_out}" />
+		<property name="encode" value="${tibco_user_encode}" />
+	</bean>
+	<!-- 启动jms监听容器 -->
+
+	<bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="queueDestination" />
+		<property name="messageListener" ref="consumerMessageListener" />
+	</bean>
+
+</beans>  

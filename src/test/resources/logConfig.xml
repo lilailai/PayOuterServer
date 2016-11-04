@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+<configuration scan="true">
+	<property name="USER_HOME" value="${workdir}" />
+	<property name="DEFAULT_FILE_NAME" value="DEFAULT" />
+
+	<!-- 控制台输出 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyyMMdd HH:mm:ss SSS}[%thread][%level][%X{LINE}]-%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- debug 开发使用 -->
+	<appender name="DEFAULT-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-DEBUG.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${USER_HOME}/logs/${DEFAULT_FILE_NAME}%d{yyyyMMdd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<layout>
+			<Pattern>%d{yyyyMMdd HH:mm:ss SSS}[%thread][%level][%X{LINE}]-%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<!-- =========================================公用配置Start=============================== -->
+	<appender name="DEFAULT-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-INFO.log
+		</File>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator>
+				<expression>!message.contains("LOG-IDX")
+					&amp;&amp;(level>=INFO)
+					&amp;&amp;(event.getThreadName().indexOf("AUTO")==-1)
+				</expression>
+			</evaluator>
+			<OnMatch>ACCEPT</OnMatch>
+			<OnMismatch>DENY</OnMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-INFO%d{yyyyMMdd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<layout>
+			<Pattern>%d{yyyyMMdd HH:mm:ss SSS}[%thread][%level][%X{LINE}]-%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+
+	<appender name="DEFAULT-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-ERROR.log
+		</File>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator>
+				<expression>(level==ERROR)
+					&amp;&amp;(event.getThreadName().indexOf("AUTO")==-1)
+				</expression>
+			</evaluator>
+			<OnMatch>ACCEPT</OnMatch>
+			<OnMismatch>DENY</OnMismatch>
+		</filter>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-ERROR%d{yyyyMMdd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<layout>
+			<Pattern>%d{yyyyMMdd HH:mm:ss SSS} [%thread][%level][%X{LINE}]-%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<!-- =========================================公用配置End=============================== -->
+
+	<logger name="org.apache.zookeeper" level="OFF" />
+
+	<logger name="java.sql.PreparedStatement" level="INFO" />
+
+	<root level="DEBUG">
+		<appender-ref ref="DEFAULT-DEBUG" />
+		<appender-ref ref="DEFAULT-INFO" />
+		<appender-ref ref="DEFAULT-ERROR" />
+		<!-- 生产的时候这个控制台日志要注释掉 -->
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
+

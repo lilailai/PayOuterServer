@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.PayproductDao">
+
+
+	<sql id="paramSql">
+		<if test="merchantid !=null and merchantid !=''">
+			AND MERCHANTID = #{merchantid}
+		</if>
+		<if test="productid !=null and productid !=''">
+			AND PRODUCTID = #{productid}
+		</if>
+
+		<if test="status !=null and status !=''">
+			AND STATUS = #{status}
+		</if>
+
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.Payproduct"
+		id="paramIdPayproduct">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="producttype" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="productdescPm" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="appBusinessType" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="timestamp" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="merchantid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="productid" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="productdesc" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="status" javaType="Integer" jdbcType="NUMERIC"
+			mode="IN" />
+		<parameter property="curmsgcode" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="startdatetime" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="enddatetime" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="denybranchid" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="denyweekday" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+		<parameter property="denydate" javaType="String" jdbcType="VARCHAR"
+			mode="IN" />
+		<parameter property="saleBusinessType" javaType="String"
+			jdbcType="VARCHAR" mode="IN" />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.Payproduct" id="resultTbPayproduct">
+		<result column="PRODUCTTYPE" property="producttype" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCTDESC_PM" property="productdescPm"
+			javaType="String" jdbcType="VARCHAR" />
+		<result column="APP_BUSINESS_TYPE" property="appBusinessType"
+			javaType="String" jdbcType="VARCHAR" />
+		<result column="TIMESTAMP" property="timestamp" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="MERCHANTID" property="merchantid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCTID" property="productid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCTDESC" property="productdesc" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="Integer"
+			jdbcType="NUMERIC" />
+		<result column="CURMSGCODE" property="curmsgcode" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="STARTDATETIME" property="startdatetime"
+			javaType="String" jdbcType="VARCHAR" />
+		<result column="ENDDATETIME" property="enddatetime" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="DENYBRANCHID" property="denybranchid" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="DENYWEEKDAY" property="denyweekday" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="DENYDATE" property="denydate" javaType="String"
+			jdbcType="VARCHAR" />
+		<result column="SALE_BUSINESS_TYPE" property="saleBusinessType"
+			javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdPayproduct"
+		resultMap="resultTbPayproduct">
+		SELECT * FROM PAYPRODUCT WHERE ROWNUM = 1
+		<include refid="paramSql"></include>
+	</select>
+</mapper>

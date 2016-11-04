@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://code.alibabatech.com/schema/dubbo  
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+	<!-- Dubbo配置 开始 -->
+	<!-- dubbo:application 应用配置 dubbo:registry 注册配置 -->
+	<!-- dubbo:monitor ： 日志配置 dubbo:protocol：端口配置 -->
+	<dubbo:application name="${dubbo.weiXinServer.name}" />
+	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}" />
+	<dubbo:monitor address="${dubbo.monitor.address}" />
+	<dubbo:protocol name="dubbo" port="${dubbo.weiXinServer.port.1}" />
+	<!-- Dubbo配置 结束 -->
+
+	<!-- 获取一些公共参数 远程获取一个公共类，timeout：超时时间, Check：是否检测 -->
+	<!-- <dubbo:reference id="commomServer" interface="com.imobpay.base.services.CommomServer" timeout="3000" check="false" ></dubbo:reference> -->
+
+
+	<!-- 用户服务接口 -->
+	<dubbo:service id="weiXinServer"  interface="com.imobpay.base.services.WeiXinServer" ref="weiXinServerImpl">
+	</dubbo:service>
+
+
+
+</beans>  

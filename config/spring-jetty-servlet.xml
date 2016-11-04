@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://code.alibabatech.com/schema/dubbo  
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 初始化jetty 并将servlet添加到 -->
+	<!-- <bean class="com.imobpay.base.servlet.InitServlet" init-method="initServlet" 
+		/> -->
+	<bean id="afterPostProcess" class="com.imobpay.base.servlet.BaseBeanPostProcessor">
+		<property name="payServlet" value="com.imobpay.base.servlet.PayServerServlet" />
+		<property name="payCallBackServlet" value="com.imobpay.base.servlet.RyxCallBackServlet" />
+		<property name="contextPath" value="/PayServer" />
+	</bean>
+
+	<bean id="Server" class="org.eclipse.jetty.server.Server"
+		init-method="start" destroy-method="stop">
+		<property name="connectors">
+			<list>
+				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+					<property name="port" value="8282" />
+				</bean>
+			</list>
+		</property>
+		<property name="handler">
+			<bean class="org.eclipse.jetty.server.handler.HandlerCollection">
+				<property name="handlers">
+					<list>
+						<bean id="test" class="org.eclipse.jetty.servlet.ServletContextHandler"></bean>
+						<bean class="org.eclipse.jetty.server.handler.DefaultHandler" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	<!-- <bean id="handlers" class="org.eclipse.jetty.servlet.ServletContextHandler"> -->
+	<!-- <property name="contextPath"> -->
+	<!-- /hello.do -->
+	<!-- </property> -->
+	<!-- <property name=""></property> -->
+	<!-- <constructor-arg></constructor-arg> -->
+	<!-- </bean> -->
+
+
+
+
+	<!-- <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList"> -->
+	<!-- <property name="handlers"> -->
+	<!-- <list> -->
+	<!-- <bean class="com.imobpay.base.servlet.MyHandler" /> -->
+	<!-- <bean class="org.eclipse.jetty.server.handler.DefaultHandler" /> -->
+	<!-- </list> -->
+	<!-- </property> -->
+	<!-- </bean> -->
+
+
+</beans>  
