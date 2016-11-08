@@ -18,8 +18,8 @@ import com.imobpay.base.entity.TbvSysParam;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
+import com.imobpay.base.services.util.EmptyChecker;
 import com.imobpay.base.services.util.PubWeiXin;
-import com.imobpay.base.util.EmptyChecker;
 
 /** 
  * ClassName: ServicesWeiXinQueryImpl <br/> 
@@ -55,7 +55,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         tbvSysParamVersion = tbvSysParamDao.selectById(tbvSysParamVersion);
         if (EmptyChecker.isEmpty(tbvSysParamVersion)) {
             LogPay.error("数据配置异常：未配置参数RYXVERSION");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String versionNo = tbvSysParamVersion.getParamvalue();
 
@@ -76,7 +76,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
         if (EmptyChecker.isEmpty(tbvSysParam)) {
             LogPay.error("数据配置异常：未配置参数PUBLICKKEY");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String publickKey = tbvSysParam.getParamvalue();
 
@@ -85,7 +85,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
         if (EmptyChecker.isEmpty(tbvSysParam)) {
             LogPay.error("数据配置异常：未配置参数PRIVATEKEY");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String privateKey = tbvSysParam.getParamvalue();
 
@@ -95,7 +95,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         tbvSysParamUrl = tbvSysParamDao.selectById(tbvSysParamUrl);
         if (EmptyChecker.isEmpty(tbvSysParamUrl)) {
             LogPay.error("数据配置异常：未配置参数WXZFURL");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String wxzfUrl = tbvSysParamUrl.getParamvalue();
 
@@ -105,7 +105,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         tbvSysParamReqPara = tbvSysParamDao.selectById(tbvSysParamReqPara);
         if (EmptyChecker.isEmpty(tbvSysParamReqPara)) {
             LogPay.error("数据配置异常：未配置参数REQPARAM");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String callBackUrl = tbvSysParamReqPara.getParamvalue();
         /** 获取公私钥对象*/

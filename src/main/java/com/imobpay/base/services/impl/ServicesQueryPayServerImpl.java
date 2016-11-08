@@ -17,7 +17,7 @@ import com.imobpay.base.entity.TbvSysParam;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
-import com.imobpay.base.util.EmptyChecker;
+import com.imobpay.base.services.util.EmptyChecker;
 
 /** 
  * ClassName: ServicesReqPayServerImpl <br/> 
@@ -58,10 +58,18 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
         /** 内部机构号*/
         String pBrdid = reqJson.getString(Console_Column.P_BRDID);
 
+        /** 查询订单是否重复*/
+        TbvFixMerchantLog selTbvFixMerchantLog = new TbvFixMerchantLog();
+        selTbvFixMerchantLog.setMerchantcode(oSerialId);
+        selTbvFixMerchantLog = tbvFixMerchantLogDao.selectById(selTbvFixMerchantLog);
+        if (EmptyChecker.isNotEmpty(selTbvFixMerchantLog)) {
+            throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "请求流水重复");
+        }
+
         /** 记录请求日志*/
         TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
         tbvFixMerchantLog.setAgencyId(pBrdid);
-        tbvFixMerchantLog.setMerchantcode("record" + oSerialId);
+        tbvFixMerchantLog.setMerchantcode(oSerialId);
         tbvFixMerchantLog.setOrderid(ordrId);
         tbvFixMerchantLog.setReqtime(oReqTrandate + oReqTrantime);
         tbvFixMerchantLogDao.insert(tbvFixMerchantLog);
@@ -81,7 +89,7 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
         Object obj = applicationContext.getBean("servicesWeiXinQueryImpl");
         if (EmptyChecker.isEmpty(obj)) {
             LogPay.error("[未定义" + obj + "]的对像或者没有注解");
-            throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.SYSNOSERVEDESC);
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         BusinessInterface bean = (BusinessInterface) obj;
         String result = bean.execute(reqJson.toString());

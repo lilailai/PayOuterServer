@@ -68,19 +68,19 @@ public class PayOuterServerImpl implements PayOuterServer {
 
             /** 判断交易码 */
             if (EmptyChecker.isEmpty(jym)) {
-                throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.JYMNULLDESC);
+                throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, Console_ErrCode.JYMNULLDESC);
             }
 
             String jymStr = JymFindServerConfig.getServerObject(jym.toString());
 
             if (EmptyChecker.isEmpty(jymStr)) {
                 LogPay.error("未配置[JymFindServerConfig]中的交易码");
-                throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.TRANS_ERROR);
+                throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, Console_ErrCode.TRANS_ERROR);
             }
             Object serverObj = applicationContext.getBean(jymStr);
             if (EmptyChecker.isEmpty(serverObj)) {
                 LogPay.error("[未定义" + serverObj + "]的对像或者没有注解");
-                throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.TRANS_ERROR);
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
             }
             BusinessInterface bean = (BusinessInterface) serverObj;
             resultJson = bean.execute(json);
@@ -93,12 +93,12 @@ public class PayOuterServerImpl implements PayOuterServer {
             LogPay.error(e.getMessage(), e);
             String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
             ReultErrorBean serverObj = (ReultErrorBean) applicationContext.getBean(reutlBeanType);
-            resultJson = serverObj.returnBeanJson(Console_ErrCode.SYSERROR, Console_ErrCode.TRANS_ERROR);
+            resultJson = serverObj.returnBeanJson(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         } catch (Throwable e) {
             LogPay.error(e.getMessage(), e);
             String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
             ReultErrorBean serverObj = (ReultErrorBean) applicationContext.getBean(reutlBeanType);
-            resultJson = serverObj.returnBeanJson(Console_ErrCode.SYSERROR, Console_ErrCode.TRANS_ERROR);
+            resultJson = serverObj.returnBeanJson(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         } finally {
             LogPay.info("返回内容[" + (System.currentTimeMillis() - l) + "]:" + resultJson);
         }
