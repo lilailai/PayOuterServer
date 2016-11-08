@@ -20,7 +20,7 @@ import com.imobpay.base.dao.TbvFixMerchantSafeDao;
 import com.imobpay.base.entity.TbvFixMerchantSafe;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.log.LogPay;
-import com.imobpay.base.services.WeiXinServer;
+import com.imobpay.base.services.PayOuterServer;
 import com.imobpay.base.util.Des3Util;
 import com.imobpay.base.util.EmptyChecker;
 import com.imobpay.base.util.MD5;
@@ -65,6 +65,7 @@ public class PayServerServlet extends HttpServlet {
         String extDes3Key = "";
         String extToken = "";
         byte[] iv = null;
+        JSONObject json = new JSONObject();
         try {
             // 添加线程号
             Thread.currentThread().setName(Tools.getOnlyPK());
@@ -103,44 +104,42 @@ public class PayServerServlet extends HttpServlet {
             /** 获取密钥 */
             LogPay.info("解密密钥 =" + extDes3Key);
             String str = "";
+            /** data 加解密Des3Util.dencrypt */
             try {
-                /** data 加解密Des3Util.dencrypt */
                 str = Des3Util.Decrypt(data, extDes3Key, iv);
-
-                /** 转换成xml */
-                JSONObject reqJson = JSONObject.parseObject(str);
-                if (EmptyChecker.isEmpty(reqJson)) {
-                    throw new QTException(Console_ErrCode.RESP_CODE_02_ERR_PARSE, "发送报文异常：报文解析失败");
-                }
-                Object branchid = reqJson.get(Console_Column.P_BRDID);
-                Object tranCode = reqJson.get(Console_Column.SMS_SERVERJYM);
-
-                /** 判断必填参数 */
-                if (EmptyChecker.isEmpty(branchid) || EmptyChecker.isEmpty(tranCode)) {
-                    throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, "参数错误：缺少必须参数、或必须参数不合法");
-                }
-                if (!checkSign(str, extToken, sign)) {
-                    LogPay.error("发送验签数据发送[" + sign + "]" + "内容使用：[" + (MD5.md5(data + extToken)) + "]");
-                    throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, "数据被篡改,验签失败.");
-                }
-                WeiXinServer weiXinServer = (WeiXinServer) applicationContext.getBean("weiXinServerImpl");
-                respData = weiXinServer.execute(reqJson.toString());
-
             } catch (Exception e) {
                 throw new QTException(Console_ErrCode.RESP_CODE_02_ERR_PARSE, "发送报文异常：报文解析失败");
             }
-        } catch (Exception e) {
+
+            /** 转换成xml */
+            JSONObject reqJson = JSONObject.parseObject(str);
+            if (EmptyChecker.isEmpty(reqJson)) {
+                throw new QTException(Console_ErrCode.RESP_CODE_02_ERR_PARSE, "发送报文异常：报文解析失败");
+            }
+            Object branchid = reqJson.get(Console_Column.P_BRDID);
+            Object tranCode = reqJson.get(Console_Column.SMS_SERVERJYM);
+
+            /** 判断必填参数 */
+            if (EmptyChecker.isEmpty(branchid) || EmptyChecker.isEmpty(tranCode)) {
+                throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, "参数错误：缺少必须参数、或必须参数不合法");
+            }
+            if (!checkSign(str, extToken, sign)) {
+                LogPay.error("发送验签数据发送[" + sign + "]" + "内容使用：[" + (MD5.md5(data + extToken)) + "]");
+                throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, "数据被篡改,验签失败.");
+            }
+            PayOuterServer weiXinServer = (PayOuterServer) applicationContext.getBean("weiXinServerImpl");
+            respData = weiXinServer.execute(reqJson.toString());
+
+        } catch (QTException e) {
             LogPay.error("系统异常:" + e.getMessage(), e);
+            json.put(Console_Column.P_MSG_CODE, e.getRespCode());
+            json.put(Console_Column.P_MSG_TEXT, e.getMessage());
         } finally {
-            JSONObject json = new JSONObject();
-            if (EmptyChecker.isEmpty(respData)) {
-                json.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_99_ERR_UNKNOW);
-                json.put(Console_Column.P_MSG_TEXT, "交易异常");
-            } else {
+            if (EmptyChecker.isNotEmpty(respData)) {
                 json = JSONObject.parseObject(respData);
             }
             response.setCharacterEncoding("UTF-8");
-            String resp = json.toJSONString();
+            String resp = json.toString();
             LogPay.info("返回数据：" + resp);
             try {
                 resp = Des3Util.Encrypt(resp, extDes3Key, iv);

@@ -6,7 +6,7 @@
 		<artifactId>PayImobProject</artifactId>
 		<version>0.0.1</version>
 	</parent>
-	<artifactId>PayWeiXinServer</artifactId>
+	<artifactId>PayOuterServer</artifactId>
 	<version>1.0</version>
 	<dependencies>
 		<dependency>

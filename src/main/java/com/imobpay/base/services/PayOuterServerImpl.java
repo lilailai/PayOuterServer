@@ -35,7 +35,7 @@ import com.imobpay.base.util.EmptyChecker;
  * </pre>
  */
 @Service
-public class WeiXinServerImpl implements WeiXinServer {
+public class PayOuterServerImpl implements PayOuterServer {
 
     /** Spring对像 */
     @Autowired

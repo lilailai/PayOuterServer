@@ -20,7 +20,7 @@
 
 
 	<!-- 用户服务接口 -->
-	<dubbo:service id="weiXinServer"  interface="com.imobpay.base.services.WeiXinServer" ref="weiXinServerImpl">
+	<dubbo:service id="payOuterServer"  interface="com.imobpay.base.services.PayOuterServer" ref="payOuterServerImpl">
 	</dubbo:service>
 
 
