@@ -31,9 +31,9 @@ import com.imobpay.base.entity.TbvSysParam;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
+import com.imobpay.base.services.util.EmptyChecker;
 import com.imobpay.base.services.util.PubWeiXin;
 import com.imobpay.base.util.DateUtil;
-import com.imobpay.base.util.EmptyChecker;
 import com.imobpay.base.util.HttpHelper;
 
 /**
@@ -60,6 +60,7 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
     public String execute(String reqParame) throws QTException {
         /** 接收请求报文  */
         JSONObject reqJson = JSONObject.parseObject(reqParame);
+        JSONObject retJson = new JSONObject();
         EmptyChecker.checkEmptyJson(reqJson, Console_Column.REQMSGID, Console_Column.WX_MSG_TRADE_TYPE, Console_Column.WX_MSG_TEM_CONTENT_COUNT);
 
         /** 接收参数  */
@@ -136,12 +137,12 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
             if (EmptyChecker.isEmpty(tbvSysParam)) {
                 LogPay.error("数据配置异常：未配置参数PUSHMSGURL");
-                throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
             }
             String pushUrlValue = tbvSysParam.getParamvalue();
             if (EmptyChecker.isEmpty(pushUrlValue)) {
                 LogPay.error("数据配置异常：未配置参数PUSHMSGURL");
-                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "系统异常");
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
             }
             pushUrlValue = pushUrlValue.replace("tradeTimeVal", tradeTimes);
             pushUrlValue = pushUrlValue.replace("orderIdVal", reqMsgId);
@@ -166,16 +167,20 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
             if (EmptyChecker.isEmpty(tbvSysParam)) {
                 LogPay.error("数据配置异常：未配置参数PAYTACARDURL");
-                throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.NO_DBPARAM);
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
             }
             String payServerUrl = tbvSysParam.getParamvalue();
             String method = HttpHelper.post(payServerUrl, firstValJson.toString(), "UTF-8", "UTF-8");
             LogPay.info("微信消息下推返回报文:" + method);
+            retJson.put(Console_Column.P_MSG_CODE, "0000");
+            retJson.put(Console_Column.P_MSG_TEXT, "下推成功");
         } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
-            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "系统异常,请稍后重试!");
+            retJson.put(Console_Column.P_MSG_CODE, "0099");
+            retJson.put(Console_Column.P_MSG_TEXT, e.getMessage());
+            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
-        return "";
+        return retJson.toString();
 
     }
 
