@@ -19,7 +19,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_Server_Jym;
-import com.imobpay.base.services.WeiXinServer;
+import com.imobpay.base.services.PayOuterServer;
 import com.imobpay.base.util.Tools;
 
 /** 
@@ -51,7 +51,7 @@ public class ServicesTest {
         System.out.println(System.getProperty("user.dir"));
         System.out.println(System.getProperty("workdir"));
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring-context.xml" });
-        WeiXinServer us = (WeiXinServer) context.getBean("weiXinServerImpl");
+        PayOuterServer us = (PayOuterServer) context.getBean("weiXinServerImpl");
         JSONObject item = new JSONObject();
         packageVerifyCreditRank(item);
         String execute = us.execute(item.toString());

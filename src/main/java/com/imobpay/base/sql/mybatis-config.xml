@@ -12,5 +12,6 @@
 		<mapper resource="com/imobpay/base/sql/mapper/TbvFixMerchantLogMapper.xml" />
 		<mapper resource="com/imobpay/base/sql/mapper/TbvOutsideOrderMapper.xml" />
 		<mapper resource="com/imobpay/base/sql/mapper/TbvCustomerMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TmpcwjMapper.xml" />
 	</mappers>
 </configuration>

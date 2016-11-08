@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TmpcwjDao">
+
+	
+	<sql id="paramSql">
+		<!--  此处一定要增加一个查询 -->
+		<if test="status !=null and status !=''">
+			AND STATUS =  #{status}
+		</if>
+		<if test="orderid !=null and orderid !=''">
+			AND ORDERID =  #{orderid}
+		</if>
+	</sql>
+	
+	<parameterMap type="com.imobpay.base.entity.Tmpcwj" id="paramIdTmpcwj">
+		<parameter property="pageflag"  javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage"   javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize"  javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+		<parameter property="orderid" javaType="String" jdbcType="VARCHAR" mode="IN"   />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.Tmpcwj" id="resultTbTmpcwj">
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="ORDERID" property="orderid" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTmpcwj" resultMap="resultTbTmpcwj">
+		SELECT * FROM TMPCWJ WHERE  ROWNUM = 1  
+		<include refid="paramSql"></include>
+	</select>
+	
+	<select id="list" parameterMap="paramIdTmpcwj" resultMap="resultTbTmpcwj">
+		<if test="pageflag==true">
+			SELECT * FROM (
+				SELECT A.*, ROWNUM RN FROM
+				(
+					SELECT * FROM TMPCWJ WHERE 1=1
+					<include refid="paramSql"></include>
+				) A WHERE ROWNUM &lt;= #{curPage}*#{pageSize}
+				) WHERE RN  &gt;=
+			(#{curPage}-1)*#{pageSize}
+		</if>
+		<if test="pageBlag==false">
+			SELECT * FROM TMPCWJ
+			WHERE 1=1
+			<include refid="paramSql"></include>
+		</if>
+	</select>
+	
+	<select id="listCount" parameterMap="paramIdTmpcwj" resultType="Integer">
+				SELECT count(1) as count FROM TMPCWJ
+				WHERE 1=1 
+				<include refid="paramSql"></include>
+	</select>
+	
+	<!-- 添加 -->
+	<insert id="insert" parameterMap="paramIdTmpcwj" timeout="1000"  >
+		INSERT INTO 
+		TMPCWJ(
+STATUS,
+				ORDERID
+		
+		)
+		VALUES(		#{status},
+		
+#{orderid})
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update"  timeout="1000" >
+		UPDATE TMPCWJ 
+		<trim prefix="SET" prefixOverrides="SET ,">
+		<if test="status !=null and status !=''">
+			,STATUS = #{status}  
+		</if>
+		<if test="orderid !=null and orderid !=''">
+			,ORDERID = #{orderid}  
+		</if>
+		</trim>
+		WHERE 1=1
+		<include refid="paramSql"></include>
+	</update>
+	
+</mapper>
