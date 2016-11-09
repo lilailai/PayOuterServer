@@ -17,6 +17,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.context.ApplicationContext;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_ErrCode;
 import com.imobpay.base.dao.TbvFixMerchantLogDao;
@@ -49,11 +50,11 @@ import com.imobpay.base.util.Tools;
 public class RyxCallBackServlet extends HttpServlet {
     /** 微信参数表 */
     private TbvSysParamDao<TbvSysParam>               tbvSysParamDao;
-    /**关联表*/
+    /** 关联表 */
     private TbvOutsideOrderDao<TbvOutsideOrder>       tbvOutsideOrderDao;
-    /**关联表*/
+    /** 关联表 */
     private TbvFixMerchantSafeDao<TbvFixMerchantSafe> tbvFixMerchantSafeDao;
-    /**流水表*/
+    /** 流水表 */
     private TbvFixMerchantLogDao<TbvFixMerchantLog>   tbvFixMerchantLogDao;
 
     /** 上下文对象 */
@@ -109,7 +110,7 @@ public class RyxCallBackServlet extends HttpServlet {
             }
 
             tbvSysParamDao = (TbvSysParamDao<TbvSysParam>) applicationContext.getBean("tbvSysParamDao");
-            /**瑞银信的公钥*/
+            /** 瑞银信的公钥 */
             TbvSysParam tbvSysParam = new TbvSysParam();
             tbvSysParam.setParamname("PUBLICKKEY");
             tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
@@ -135,7 +136,7 @@ public class RyxCallBackServlet extends HttpServlet {
                     + "CKx2Qi7NomRamTw5Nlmb6yQPU8lb6d4FbRGB7rDmbmrZJYP8VOY6YRR4jj4fhyxx" + "gu+lOODmLr6/";
             // String privateKey = tbvSysParam.getParamvalue();
 
-            /** 获取公私钥对象*/
+            /** 获取公私钥对象 */
             Map<String, Object> keyMaps = new HashMap<String, Object>();
             keyMaps.put("publickKey", publickKey);
             keyMaps.put("privateKey", privateKey);
@@ -150,9 +151,11 @@ public class RyxCallBackServlet extends HttpServlet {
             if ("000000".equals(resultCode)) {
                 totalAmount = callJson.getString("totalAmount");
                 settleDate = callJson.getString("settleDate");
+                respType = callJson.getString("respType");
+
             }
 
-            /** 调用查询接口*/
+            /** 调用查询接口 */
             JSONObject sendData = new JSONObject();
             sendData.put("ORIREQMSGID", reqMsgId);
             sendData.put("MSGTYPE", "01");
@@ -168,7 +171,7 @@ public class RyxCallBackServlet extends HttpServlet {
                 throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
             }
 
-            /** 查询返回的结果*/
+            /** 查询返回的结果 */
             JSONObject resp = JSONObject.parseObject(queryResult);
             String resCode = resp.getString(Console_Column.P_MSG_CODE);
             String oriRespType = "";
@@ -190,48 +193,49 @@ public class RyxCallBackServlet extends HttpServlet {
 
             if ("000000".equals(resultCode) && "000000".equals(queryRespCode)) {
                 if ("s".equalsIgnoreCase(oriRespType)) {
-                    resultData.put("ORDERID", reqMsgId);
-                    resultData.put(Console_Column.P_MSG_CODE, "0000");
-                    resultData.put(Console_Column.P_MSG_TEXT, "交易成功");
-                    if (oriRespType.equals(respType) && EmptyChecker.isEmpty(tbvOutsideOrder)) {
-                        LogPay.info("交易：" + reqMsgId + "回调与查询结果一致");
-                        /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
-                        tbvSysParam.setParamname("wxPaySendTcp");
-                        tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
-                        if (EmptyChecker.isEmpty(tbvSysParam)) {
-                            LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
-                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
-                        }
-                        String sendtcp = tbvSysParam.getParamvalue();
-                        LogPay.info("发送队列名:" + sendtcp);
+                    if (oriRespType.equals(respType)) {
+                        resultData.put(Console_Column.P_MSG_CODE, "0000");
+                        resultData.put(Console_Column.P_MSG_TEXT, "交易成功");
+                        if (EmptyChecker.isEmpty(tbvOutsideOrder)) {
+                            LogPay.info("交易：" + reqMsgId + "回调与查询结果一致");
+                            /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
+                            tbvSysParam.setParamname("wxPaySendTcp");
+                            tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
+                            if (EmptyChecker.isEmpty(tbvSysParam)) {
+                                LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
+                                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                            }
+                            String sendtcp = tbvSysParam.getParamvalue();
+                            LogPay.info("发送队列名:" + sendtcp);
 
-                        /** 调取核心记录交易流水信息 */
-                        TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
-                        try {
-                            jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
-                        } catch (Exception e) {
-                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
-                        }
+                            /** 调取核心记录交易流水信息 */
+                            TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
+                            try {
+                                jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
+                            } catch (Exception e) {
+                                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                            }
 
-                        /** 调用消息下推 */
-                        JSONObject pushData = new JSONObject();
-                        pushData.put("P_TRANCODE", "WxMsgSend");
-                        pushData.put(Console_Column.REQMSGID, reqMsgId);
-                        pushData.put(Console_Column.WX_MSG_TRADE_TYPE, "WxMsgTrade");
-                        pushData.put(Console_Column.WX_MSG_TEM_CONTENT_COUNT, "3");
-                        Object downPushObj = applicationContext.getBean("servicesWeiXinMsgPush");
-                        if (EmptyChecker.isEmpty(downPushObj)) {
-                            LogPay.error("[未定义" + downPushObj + "]的对像或者没有注解");
-                            throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.SYSNOSERVEDESC);
-                        }
-                        BusinessInterface downPushBean = (BusinessInterface) obj;
-                        String rs = downPushBean.execute(sendData.toString());
-                        if (EmptyChecker.isEmpty(rs)) {
-                            LogPay.info("消息下推无返回");
-                        } else {
-                            LogPay.info("消息下推返回：" + rs);
-                        }
+                            /** 调用消息下推 */
+                            JSONObject pushData = new JSONObject();
+                            pushData.put("P_TRANCODE", "WxMsgSend");
+                            pushData.put(Console_Column.REQMSGID, reqMsgId);
+                            pushData.put(Console_Column.WX_MSG_TRADE_TYPE, "WxMsgTrade");
+                            pushData.put(Console_Column.WX_MSG_TEM_CONTENT_COUNT, "3");
+                            Object downPushObj = applicationContext.getBean("servicesWeiXinMsgPush");
+                            if (EmptyChecker.isEmpty(downPushObj)) {
+                                LogPay.error("[未定义" + downPushObj + "]的对像或者没有注解");
+                                throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.SYSNOSERVEDESC);
+                            }
+                            BusinessInterface downPushBean = (BusinessInterface) obj;
+                            String rs = downPushBean.execute(sendData.toString());
+                            if (EmptyChecker.isEmpty(rs)) {
+                                LogPay.info("消息下推无返回");
+                            } else {
+                                LogPay.info("消息下推返回：" + rs);
+                            }
 
+                        }
                     }
                 } else {
                     /** 交易失败 */
@@ -258,10 +262,11 @@ public class RyxCallBackServlet extends HttpServlet {
                     String oSerialid = tbvFixMerchantLog.getMerchantcode();
                     resultData.put(Console_Column.O_SERIALID, oSerialid);
                     resultData.put(Console_Column.TOTALAMOUNT, totalAmount);
+                    resultData.put("ORDERID", outerOrder);
                     resultData.put("SETTLEDATE", settleDate);
                     response.setCharacterEncoding("UTF-8");
-                    String resp = resultData.toJSONString();
-                    LogPay.info("返回数据：" + resultData);
+                    String resp = JSONObject.toJSONString(resultData, SerializerFeature.WriteMapNullValue);
+                    LogPay.info("返回合作方数据：" + resp);
                     /** 获取密钥对像 */
                     String agentId = tbvFixMerchantLog.getAgencyId();
                     TbvFixMerchantSafe tbvFixMerchantSafe = new TbvFixMerchantSafe();
@@ -287,6 +292,8 @@ public class RyxCallBackServlet extends HttpServlet {
                     LogPay.info("解密密钥 =" + extDes3Key);
                     resp = Des3Util.Encrypt(resp, extDes3Key, iv);
                     resp = java.net.URLEncoder.encode(resp, "UTF-8");
+
+                    LogPay.info("回调合作方地址:" + callBackUrl);
                     HttpHelper.send(callBackUrl, resp);
                 }
             } catch (Exception e) {

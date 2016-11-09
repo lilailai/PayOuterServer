@@ -21,13 +21,14 @@ import com.imobpay.base.log.LogPay;
 import com.imobpay.base.services.util.EmptyChecker;
 import com.imobpay.base.services.util.PubWeiXin;
 
-/** 
- * ClassName: ServicesWeiXinQueryImpl <br/> 
- * Function: 微信查询订单接口. <br/> 
- * date: 2016年10月24日 下午2:56:35 <br/> 
+/**
+ * ClassName: ServicesWeiXinQueryImpl <br/>
+ * Function: 微信查询订单接口. <br/>
+ * date: 2016年10月24日 下午2:56:35 <br/>
+ * 
  * @author CAOWENJUN
- * @version  
- * @since JDK 1.6 
+ * @version
+ * @since JDK 1.6
  */
 @Service
 public class ServicesWeiXinQueryImpl implements BusinessInterface {
@@ -40,11 +41,11 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
 
     @Override
     public String execute(String reqParame) throws QTException {
-        /**参数处理  */
+        /** 参数处理 */
         JSONObject reqJson = JSONObject.parseObject(reqParame);
         EmptyChecker.checkEmptyJson(reqJson, Console_Column.ORI_REQMSGID, Console_Column.MSGTYPE, Console_Column.REQDATE);
 
-        /** 接收参数  */
+        /** 接收参数 */
         String oriReqMsgId = reqJson.getString(Console_Column.ORI_REQMSGID);
         String msgType = reqJson.getString(Console_Column.MSGTYPE);
         String reqDate = reqJson.getString(Console_Column.REQDATE);
@@ -70,7 +71,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         LogPay.info("SMZF100002发送报文：" + reqDatas.toString());
         json.put("data", reqDatas);
 
-        /**瑞银信的公钥*/
+        /** 瑞银信的公钥 */
         TbvSysParam tbvSysParam = new TbvSysParam();
         tbvSysParam.setParamname("PUBLICKKEY");
         tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
@@ -108,7 +109,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
         String callBackUrl = tbvSysParamReqPara.getParamvalue();
-        /** 获取公私钥对象*/
+        /** 获取公私钥对象 */
         Map<String, Object> keyMaps = new HashMap<String, Object>();
         keyMaps.put("publickKey", publickKey);
         keyMaps.put("privateKey", privateKey);
@@ -116,7 +117,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         PrivateKey hzfPriKey = (PrivateKey) keys.get("hzfPriKey");
         PublicKey yhPubKey = (PublicKey) keys.get("yhPubKey");
 
-        /** 需要加密的数据集*/
+        /** 需要加密的数据集 */
         Map<String, Object> datas = new HashMap<String, Object>();
         /** 加密数据 */
         datas.put("reqData", json);
@@ -126,9 +127,9 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         datas.put("yhPubKey", yhPubKey);
         datas.put("wxzfUrl", wxzfUrl);
         datas.put("callBackUrl", callBackUrl);
-        /** 加密并发送数据*/
+        /** 加密并发送数据 */
         String retData = PubWeiXin.postData(datas);
-        /** 解密数据*/
+        /** 解密数据 */
         String analyData = PubWeiXin.analyData(retData, hzfPriKey);
 
         /** 处理返回结果 */
@@ -137,6 +138,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
         String resultCode = resultData.getString("respCode");
         String resultDesc = resultData.getString("respMsg");
         JSONObject retJson = new JSONObject();
+        retJson.put("resultCode", resultCode);
         if ("000000".equals(resultCode)) {
             JSONObject data = (JSONObject) resultData.get("data");
             String oriRespType = data.getString("oriRespType");

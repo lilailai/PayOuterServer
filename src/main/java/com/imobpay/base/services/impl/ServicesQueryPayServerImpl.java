@@ -19,13 +19,14 @@ import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
 import com.imobpay.base.services.util.EmptyChecker;
 
-/** 
- * ClassName: ServicesReqPayServerImpl <br/> 
- * Function: 查询订单接口. <br/> 
- * date: 2016年10月24日 下午2:56:35 <br/> 
+/**
+ * ClassName: ServicesReqPayServerImpl <br/>
+ * Function: 查询订单接口. <br/>
+ * date: 2016年10月24日 下午2:56:35 <br/>
+ * 
  * @author CAOWENJUN
- * @version  
- * @since JDK 1.6 
+ * @version
+ * @since JDK 1.6
  */
 @Service
 public class ServicesQueryPayServerImpl implements BusinessInterface {
@@ -49,16 +50,16 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
                 Console_Column.O_VERSION, Console_Column.MSGTYPE, Console_Column.ORDERID, Console_Column.MERCHANTCODE);
         /** 外部机构生产的订单号 */
         String ordrId = reqJson.getString(Console_Column.ORDERID);
-        /** 外部机构生产的流水号*/
+        /** 外部机构生产的流水号 */
         String oSerialId = reqJson.getString(Console_Column.O_SERIALID);
-        /** 外部机构请求日期*/
+        /** 外部机构请求日期 */
         String oReqTrandate = reqJson.getString(Console_Column.O_REQ_TRANDATE);
-        /** 外部机构请求时间*/
+        /** 外部机构请求时间 */
         String oReqTrantime = reqJson.getString(Console_Column.O_REQ_TRANTIME);
-        /** 内部机构号*/
+        /** 内部机构号 */
         String pBrdid = reqJson.getString(Console_Column.P_BRDID);
 
-        /** 查询订单是否重复*/
+        /** 查询订单是否重复 */
         TbvFixMerchantLog selTbvFixMerchantLog = new TbvFixMerchantLog();
         selTbvFixMerchantLog.setMerchantcode(oSerialId);
         selTbvFixMerchantLog = tbvFixMerchantLogDao.selectById(selTbvFixMerchantLog);
@@ -66,7 +67,7 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "请求流水重复");
         }
 
-        /** 记录请求日志*/
+        /** 记录请求日志 */
         TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
         tbvFixMerchantLog.setAgencyId(pBrdid);
         tbvFixMerchantLog.setMerchantcode(oSerialId);
@@ -97,7 +98,7 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         }
 
-        /**处理返回报文 */
+        /** 处理返回报文 */
         JSONObject retJson = JSONObject.parseObject(result);
         String pcode = "";
         String totalAmount = "";
@@ -113,7 +114,7 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
             totalAmount = "";
             pcode = Console_ErrCode.RESP_CODE_88_ERR_TXN;
         }
-        /**组装返回报文 */
+        /** 组装返回报文 */
         JSONObject retData = new JSONObject();
         retData.put(Console_Column.ORDERID, ordrId);
         retData.put(Console_Column.P_MSG_CODE, pcode);
@@ -121,11 +122,11 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
         retData.put(Console_Column.O_SERIALID, oSerialId);
         retData.put(Console_Column.TOTALAMOUNT, totalAmount);
         if ("S".equalsIgnoreCase(oriRespType)) {
-            retData.put(Console_Column.STATUS, "1");
+            retData.put(Console_Column.TRANS_STATUS, "1");
         } else if ("E".equalsIgnoreCase(oriRespType)) {
-            retData.put(Console_Column.STATUS, "2");
+            retData.put(Console_Column.TRANS_STATUS, "2");
         } else {
-            retData.put(Console_Column.STATUS, "3");
+            retData.put(Console_Column.TRANS_STATUS, "3");
         }
         return retData.toString();
     }
