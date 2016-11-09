@@ -23,13 +23,14 @@ import com.imobpay.base.services.util.EmptyChecker;
 import com.imobpay.base.services.util.TiboJmsUntil;
 import com.imobpay.base.util.DateUtil;
 
-/** 
- * ClassName: ServicesReqPayServerImpl <br/> 
- * Function: 请求订单接口. <br/> 
- * date: 2016年10月24日 下午2:56:35 <br/> 
+/**
+ * ClassName: ServicesReqPayServerImpl <br/>
+ * Function: 请求订单接口. <br/>
+ * date: 2016年10月24日 下午2:56:35 <br/>
+ * 
  * @author CAOWENJUN
- * @version  
- * @since JDK 1.6 
+ * @version
+ * @since JDK 1.6
  */
 @Service
 public class ServicesReqPayServerImpl implements BusinessInterface {
@@ -57,24 +58,24 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
                 Console_Column.O_REQ_TRANDATE, Console_Column.O_REQ_TRANTIME, Console_Column.O_VERSION);
         /** 外部机构生产的订单号 */
         String ordrId = reqJson.getString(Console_Column.ORDERID);
-        /** 外部机构生产的流水号*/
+        /** 外部机构生产的流水号 */
         String oSerialId = reqJson.getString(Console_Column.O_SERIALID);
-        /** 外部机构请求日期*/
+        /** 外部机构请求日期 */
         String oReqTrandate = reqJson.getString(Console_Column.O_REQ_TRANDATE);
-        /** 外部机构请求时间*/
+        /** 外部机构请求时间 */
         String oReqTrantime = reqJson.getString(Console_Column.O_REQ_TRANTIME);
-        /** 内部机构号*/
+        /** 内部机构号 */
         String pBrdid = reqJson.getString(Console_Column.P_BRDID);
-        /** 商户编号*/
+        /** 商户编号 */
         String merchantCode = reqJson.getString(Console_Column.MERCHANTCODE);
-        /** 支付方式*/
+        /** 支付方式 */
         String payWay = reqJson.getString(Console_Column.PAYWAY);
-        /** 交易金额*/
+        /** 交易金额 */
         String totalAmount = reqJson.getString(Console_Column.TOTALAMOUNT);
         /** 回调地址 */
         String payCallbackurl = reqJson.getString(Console_Column.PAY_CALLBACKURL);
 
-        /** 查询订单是否重复*/
+        /** 查询订单是否重复 */
         TbvFixMerchantLog selTbvFixMerchantLog = new TbvFixMerchantLog();
         selTbvFixMerchantLog.setMerchantcode(oSerialId);
         selTbvFixMerchantLog = tbvFixMerchantLogDao.selectById(selTbvFixMerchantLog);
@@ -82,7 +83,7 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "请求流水重复");
         }
 
-        /** 记录请求日志*/
+        /** 记录请求日志 */
         TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
         tbvFixMerchantLog.setAgencyId(pBrdid);
         tbvFixMerchantLog.setMerchantcode(oSerialId);
@@ -90,7 +91,7 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
         tbvFixMerchantLog.setReqtime(oReqTrandate + oReqTrantime);
         tbvFixMerchantLogDao.insert(tbvFixMerchantLog);
 
-        /** 记录临时表*/
+        /** 记录临时表 */
         Tmpcwj tmpcwj = new Tmpcwj();
         tmpcwj.setOrderid(ordrId);
         tmpcwj.setStatus("1");
@@ -107,7 +108,7 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
         String payWeixinMerchantid = tbvSysParamPc.getParamvalue();
 
         /** 查询参数表TBV_SYS_PARAM-PAY_WEIXIN_MERCHANTID */
-        tbvSysParamPc.setParamname(Console_Column.PAY_WEIXIN_PRODUCTID);
+        tbvSysParamPc.setParamname(Console_Column.PAY_WEIXIN_PRODUCTID + "_" + payWay);
         tbvSysParamPc = tbvSysParamDao.selectById(tbvSysParamPc);
         if (EmptyChecker.isEmpty(tbvSysParamPc)) {
             LogPay.error("数据配置异常：未配置参数PAY_WEIXIN_MERCHANTID");
@@ -147,9 +148,9 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
         content.put(Console_Column.OUTSIDE_ORDER, ordrId);
         content.put(Console_Column.WX_COOPER_URL, payCallbackurl);
         if (Console_Column.WXZF.equals(payWay)) {
-            content.put(Console_Column.TX_PAY_TYPE, "01");
+            content.put(Console_Column.TX_PAY_TYPE, "12");
         } else {
-            content.put(Console_Column.TX_PAY_TYPE, "21");
+            content.put(Console_Column.TX_PAY_TYPE, "32");
         }
         String orderMsg = "";
         try {
@@ -160,13 +161,13 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         }
 
-        /** 核心返回数据判空*/
+        /** 核心返回数据判空 */
         if (EmptyChecker.isEmpty(orderMsg)) {
             LogPay.error("请求核心订单异常：核心返回数据为空");
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         }
 
-        /** 核心返回数据处理*/
+        /** 核心返回数据处理 */
         JSONObject oderMsgJson = JSONObject.parseObject(orderMsg);
         String oderMsgJsonCode = oderMsgJson.getString(Console_Column.P_MSG_CODE);
         String oderMsgJsonText = oderMsgJson.getString(Console_Column.P_MSG_TEXT);
@@ -194,7 +195,7 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         }
 
-        /**处理返回报文 */
+        /** 处理返回报文 */
         JSONObject retJson = JSONObject.parseObject(result);
         String pcode = "";
         String ptxt = "";
@@ -208,7 +209,7 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
             pcode = Console_ErrCode.RESP_CODE_88_ERR_TXN;
             ptxt = Console_ErrCode.TRANS_ERROR;
         }
-        /**组装返回报文 */
+        /** 组装返回报文 */
         JSONObject retData = new JSONObject();
         retData.put(Console_Column.ORDERID, ordrId);
         retData.put(Console_Column.P_MSG_CODE, pcode);

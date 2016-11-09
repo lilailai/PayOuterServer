@@ -71,11 +71,10 @@ public class Start {
                 }
             }
         }
-
+        System.setProperty("workdir", workdir);
         /** 加载Spring配置文件 */
         context = new FileSystemXmlApplicationContext(new String[] { "File:" + workdir + "/config/spring-context.xml" });
         long l2 = System.currentTimeMillis();
-        System.setProperty("workdir", workdir);
         LogPay.info("加载文件Jar使用时间[" + (l2 - l) + "]");
 
     }
