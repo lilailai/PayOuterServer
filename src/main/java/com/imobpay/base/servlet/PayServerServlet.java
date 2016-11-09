@@ -28,9 +28,10 @@ import com.imobpay.base.util.Tools;
 
 /**
  * 
- * ClassName: PayServerServlet <br/> 
+ * ClassName: PayServerServlet <br/>
+ * 
  * @author CAOWENJUN
- * @version  
+ * @version
  * @since JDK 1.6
  */
 @Service
@@ -49,7 +50,7 @@ public class PayServerServlet extends HttpServlet {
         applicationContext = (ApplicationContext) (this.getServletContext().getAttribute("applicationContext"));
     }
 
-    /**serialVersionUID */
+    /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -65,6 +66,7 @@ public class PayServerServlet extends HttpServlet {
         String extDes3Key = "";
         String extToken = "";
         byte[] iv = null;
+        String resp = "";
         JSONObject json = new JSONObject();
         try {
             // 添加线程号
@@ -130,29 +132,29 @@ public class PayServerServlet extends HttpServlet {
             PayOuterServer weiXinServer = (PayOuterServer) applicationContext.getBean("payOuterServerImpl");
             respData = weiXinServer.execute(reqJson.toString());
 
-        } catch (QTException e) {
-            LogPay.error("系统异常:" + e.getMessage(), e);
-            json.put(Console_Column.P_MSG_CODE, e.getRespCode());
-            json.put(Console_Column.P_MSG_TEXT, e.getMessage());
-        } finally {
             if (EmptyChecker.isNotEmpty(respData)) {
                 json = JSONObject.parseObject(respData);
             }
             response.setCharacterEncoding("UTF-8");
-            String resp = json.toString();
+            resp = json.toString();
             LogPay.info("返回数据：" + resp);
             try {
                 resp = Des3Util.Encrypt(resp, extDes3Key, iv);
                 resp = java.net.URLEncoder.encode(resp, "UTF-8");
             } catch (Exception e) {
-                JSONObject jsonResp = new JSONObject();
-                jsonResp.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_99_ERR_UNKNOW);
-                jsonResp.put(Console_Column.P_MSG_TEXT, "交易异常");
-                resp = jsonResp.toJSONString();
-                LogPay.error("返回数据异常:" + e.getMessage());
+                LogPay.error("系统异常:" + e.getMessage(), e);
+                throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, e.getMessage());
             }
+        } catch (QTException e) {
+            LogPay.error("系统异常:" + e.getMessage(), e);
+            JSONObject jsonResp = new JSONObject();
+            jsonResp.put(Console_Column.P_MSG_CODE, e.getRespCode());
+            jsonResp.put(Console_Column.P_MSG_TEXT, e.getRespMsg());
+            resp = jsonResp.toJSONString();
+        } finally {
+            byte[] respByte = resp.getBytes(Des3Util.getcodingType());
             ServletOutputStream out = response.getOutputStream();
-            out.write(resp.getBytes(Des3Util.getcodingType()));
+            out.write(respByte);
             LogPay.info("当前业务处理耗时:" + (System.currentTimeMillis() - reqRime));
             out.flush();
             out.close();
@@ -164,9 +166,12 @@ public class PayServerServlet extends HttpServlet {
      * @Title: checkSign
      * 
      * @Description: 验证MD5签名
-     * @param jsonStr jsonStr
-     * @param token token
-     * @param sign sign
+     * @param jsonStr
+     *            jsonStr
+     * @param token
+     *            token
+     * @param sign
+     *            sign
      * @return boolean
      */
     public boolean checkSign(String jsonStr, String token, String sign) {
