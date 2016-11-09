@@ -127,7 +127,7 @@ public class PayServerServlet extends HttpServlet {
                 LogPay.error("发送验签数据发送[" + sign + "]" + "内容使用：[" + (MD5.md5(data + extToken)) + "]");
                 throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, "数据被篡改,验签失败.");
             }
-            PayOuterServer weiXinServer = (PayOuterServer) applicationContext.getBean("weiXinServerImpl");
+            PayOuterServer weiXinServer = (PayOuterServer) applicationContext.getBean("payOuterServerImpl");
             respData = weiXinServer.execute(reqJson.toString());
 
         } catch (QTException e) {

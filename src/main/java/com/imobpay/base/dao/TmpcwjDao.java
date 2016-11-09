@@ -17,14 +17,12 @@ import com.imobpay.base.iface.BaseDao;
  * <pre>
  * ClassName: Tmpcwj <br/> 
  * date: 20161108 071122 <br/> 
- * @param Tmpcwj 对象
+ * @param <T> 对象
  * @author Lance.Wu . <br/> 
  * @version 1.0. <br/> 
  * @since JDK 1.6 PayUserServer 1.0 . <br/>
  * </pre>
  */
-public interface TmpcwjDao<T> extends BaseDao<T>{
-
-
+public interface TmpcwjDao<T> extends BaseDao<T> {
 
 }

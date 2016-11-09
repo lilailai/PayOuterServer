@@ -20,25 +20,24 @@ package com.imobpay.base.entity;
  * @since JDK 1.6 PayUserServer 1.0 . <br/>
  * </pre>
  */
- public class Tmpcwj extends BaseEntity {
+public class Tmpcwj extends BaseEntity {
 
-	/** 序号 */
+    /** 序号 */
     private static final long serialVersionUID = 1L;
 
-   	/** 属性描述： */	
-   	private String            status;
-   	/** 属性描述： */	
-   	private String            orderid;
-   	
+    /** 属性描述： */
+    private String            status;
+    /** 属性描述： */
+    private String            orderid;
+
     /**
      * 描述：获取属性值-.<br/>
      * 创建人：LanceWu <br/>
      * 返回类型：@return String .<br/>
      */
-   	public String getStatus() {
+    public String getStatus() {
         return status;
     }
- 
 
     /**
      * 创建人：LanceWu <br/>
@@ -48,16 +47,15 @@ package com.imobpay.base.entity;
     public void setStatus(String status) {
         this.status = status;
     }
-   
+
     /**
      * 描述：获取属性值-.<br/>
      * 创建人：LanceWu <br/>
      * 返回类型：@return String .<br/>
      */
-   	public String getOrderid() {
+    public String getOrderid() {
         return orderid;
     }
- 
 
     /**
      * 创建人：LanceWu <br/>
@@ -67,7 +65,5 @@ package com.imobpay.base.entity;
     public void setOrderid(String orderid) {
         this.orderid = orderid;
     }
-   
-   	
 
 }

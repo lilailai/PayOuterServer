@@ -9,10 +9,10 @@
 	<!-- Dubbo配置 开始 -->
 	<!-- dubbo:application 应用配置 dubbo:registry 注册配置 -->
 	<!-- dubbo:monitor ： 日志配置 dubbo:protocol：端口配置 -->
-	<dubbo:application name="${dubbo.weiXinServer.name}" />
+	<dubbo:application name="${dubbo.payOuterServer.name}" />
 	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}" />
 	<dubbo:monitor address="${dubbo.monitor.address}" />
-	<dubbo:protocol name="dubbo" port="${dubbo.weiXinServer.port.1}" />
+	<dubbo:protocol name="dubbo" port="${dubbo.payOuterServer.port.1}" />
 	<!-- Dubbo配置 结束 -->
 
 	<!-- 获取一些公共参数 远程获取一个公共类，timeout：超时时间, Check：是否检测 -->
@@ -20,7 +20,7 @@
 
 
 	<!-- 用户服务接口 -->
-	<dubbo:service id="weiXinServer"  interface="com.imobpay.base.services.WeiXinServer" ref="weiXinServerImpl">
+	<dubbo:service id="payOuterServer"  interface="com.imobpay.base.services.PayOuterServer" ref="payOuterServerImpl">
 	</dubbo:service>
 
 
