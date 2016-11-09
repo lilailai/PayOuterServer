@@ -263,8 +263,9 @@ public class RyxCallBackServlet extends HttpServlet {
                     String resp = resultData.toJSONString();
                     LogPay.info("返回数据：" + resultData);
                     /** 获取密钥对像 */
+                    String agentId = tbvFixMerchantLog.getAgencyId();
                     TbvFixMerchantSafe tbvFixMerchantSafe = new TbvFixMerchantSafe();
-                    tbvFixMerchantSafe.setAgencyId(outerOrder);
+                    tbvFixMerchantSafe.setAgencyId(agentId);
                     tbvFixMerchantSafeDao = (TbvFixMerchantSafeDao<TbvFixMerchantSafe>) applicationContext.getBean("tbvFixMerchantSafeDao");
                     tbvFixMerchantSafe = tbvFixMerchantSafeDao.selectById(tbvFixMerchantSafe);
                     if (EmptyChecker.isEmpty(tbvFixMerchantSafe)) {
