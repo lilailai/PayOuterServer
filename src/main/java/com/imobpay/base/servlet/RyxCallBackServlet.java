@@ -194,28 +194,28 @@ public class RyxCallBackServlet extends HttpServlet {
             if ("000000".equals(resultCode) && "000000".equals(queryRespCode)) {
                 if ("s".equalsIgnoreCase(oriRespType)) {
                     if (oriRespType.equals(respType)) {
+                        LogPay.info("交易：" + reqMsgId + "回调与查询结果一致");
                         resultData.put(Console_Column.P_MSG_CODE, "0000");
                         resultData.put(Console_Column.P_MSG_TEXT, "交易成功");
+                        resultData.put(Console_Column.ORDERID, reqMsgId);
+                        /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
+                        tbvSysParam.setParamname("wxPaySendTcp");
+                        tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
+                        if (EmptyChecker.isEmpty(tbvSysParam)) {
+                            LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
+                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                        }
+                        String sendtcp = tbvSysParam.getParamvalue();
+                        LogPay.info("发送队列名:" + sendtcp);
+
+                        /** 调取核心记录交易流水信息 */
+                        TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
+                        try {
+                            jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
+                        } catch (Exception e) {
+                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                        }
                         if (EmptyChecker.isEmpty(tbvOutsideOrder)) {
-                            LogPay.info("交易：" + reqMsgId + "回调与查询结果一致");
-                            /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
-                            tbvSysParam.setParamname("wxPaySendTcp");
-                            tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
-                            if (EmptyChecker.isEmpty(tbvSysParam)) {
-                                LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
-                                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
-                            }
-                            String sendtcp = tbvSysParam.getParamvalue();
-                            LogPay.info("发送队列名:" + sendtcp);
-
-                            /** 调取核心记录交易流水信息 */
-                            TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
-                            try {
-                                jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
-                            } catch (Exception e) {
-                                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
-                            }
-
                             /** 调用消息下推 */
                             JSONObject pushData = new JSONObject();
                             pushData.put("P_TRANCODE", "WxMsgSend");
