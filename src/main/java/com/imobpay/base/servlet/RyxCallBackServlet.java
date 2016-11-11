@@ -252,6 +252,13 @@ public class RyxCallBackServlet extends HttpServlet {
                 resultData.put("ORDERID", reqMsgId);
                 resultData.put(Console_Column.P_MSG_CODE, "0088");
                 resultData.put(Console_Column.P_MSG_TEXT, "交易失败");
+                /** 如果是外部订单，需要回调核心 */
+                TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
+                try {
+                    jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
+                } catch (Exception e) {
+                    LogPay.error("回调核心队列失败：" + e.getMessage());
+                }
             }
 
         } catch (QTException e) {
@@ -261,13 +268,6 @@ public class RyxCallBackServlet extends HttpServlet {
         } finally {
             try {
                 if (EmptyChecker.isNotEmpty(outerOrder)) {
-                    /** 如果是外部订单，需要回调核心 */
-                    TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
-                    try {
-                        jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
-                    } catch (Exception e) {
-                        LogPay.error("回调核心队列失败：" + e.getMessage());
-                    }
                     TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
                     tbvFixMerchantLog.setOrderid(outerOrder);
                     tbvFixMerchantLogDao = (TbvFixMerchantLogDao<TbvFixMerchantLog>) applicationContext.getBean("tbvFixMerchantLogDao");
