@@ -39,14 +39,14 @@ public class PubWeiXin {
      * author：曹文军.<br/>
      * 创建日期：2016年8月29日.<br/>
      * 创建时间：下午1:29:21.<br/>
-     * 参数或异常：@param para 参数
-     * 参数或异常：@return 
+     * 参数或异常：@param para 
+     * 参数 参数或异常：@return 
      * 参数或异常：@throws QTException .<br/>
      * 返回结果：HashMap<String,String>.<br/>
      * 其它内容： JDK 1.6 QtServer 1.0.<br/>
      */
     public static String postData(Map<String, Object> para) throws QTException {
-        
+
         /** 获取配置的URL */
         String url = (String) para.get("wxzfUrl");
         /** 回调URL */
@@ -88,7 +88,7 @@ public class PubWeiXin {
             nvps.add(new BasicNameValuePair("reqMsgId", reqMsgId));
         } catch (Exception e) {
             LogPay.error("加密数据异常:" + e.getMessage());
-            throw new QTException(Console_ErrCode.SYSERROR, "加密数据");
+            throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "加密数据异常");
         }
 
         String respStr = HttpClient.post(url, nvps);
@@ -96,7 +96,7 @@ public class PubWeiXin {
         LogPay.info("发送瑞银信返回报文[微信支付]：" + respStr);
         if (EmptyChecker.isEmpty(respStr)) {
             LogPay.error("发送瑞银信未返回结果");
-            throw new QTException(Console_ErrCode.SYSERROR, Console_ErrCode.SYSNOERRORDESC);
+            throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "运营商未响应");
         }
 
         JSONObject jsonObject = JSONObject.parseObject(respStr);
@@ -114,10 +114,9 @@ public class PubWeiXin {
      * author：曹文军.<br/>
      * 创建日期：2016年9月1日.<br/>
      * 创建时间：下午2:09:56.<br/>
-     * 参数或异常：@param para 参数
+     * 参数或异常：@param para 参数 
      * 参数或异常：@throws QTException .<br/>
-     * @return
-     * 其它内容： JDK 1.6 QtServer 1.0.<br/>
+     * @return 其它内容： JDK 1.6 QtServer 1.0.<br/>
      */
     public static Map<String, Object> getKeys(Map<String, Object> para) throws QTException {
         /** 瑞银信的公钥 */
@@ -136,7 +135,7 @@ public class PubWeiXin {
             priKey = priKeyFcty.generatePrivate(priPKCS8);
         } catch (Exception e) {
             LogPay.error("生成密钥对象异常:" + e.getMessage());
-            throw new QTException(Console_ErrCode.SYSERROR, "生成密钥对象异常");
+            throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "生成密钥对象异常");
         }
 
         Map<String, Object> keys = new HashMap<String, Object>();
@@ -146,12 +145,14 @@ public class PubWeiXin {
     }
 
     /**
-     * 创建日期：2016年9月1日.<br/>
-     * 创建时间：下午3:04:54.<br/>
-     * 参数或异常：@param fen
-     * 参数或异常：@return .<br/>
-     * 返回结果：String.<br/>
-     * 其它内容： JDK 1.6 QtServer 1.0.<br/>
+     * 
+     * 【方法名】    : (这里用一句话描述这个方法的作用). <br/> 
+     * 【注意】: (这里描述这个方法的注意事项 – 可选).<br/> 
+     * 【作者】: Administrator .<br/>
+     * 【时间】： 2016年11月10日 下午3:34:16 .<br/>
+     * 【参数】： .<br/>
+     * @param fen 单位
+     * @return str .<br/>
      */
     public static String fromFenToYuan(String fen) {
         String yuan = "";
@@ -166,15 +167,15 @@ public class PubWeiXin {
     }
 
     /**
-     * author：曹文军.<br/>
-     * 创建日期：2016年9月1日.<br/>
-     * 创建时间：下午3:52:28.<br/>
-     * 参数或异常：@param dataStr
-     * 参数或异常：@param hzfPriKey
-     * 参数或异常：@return
-     * 参数或异常：@throws QTException .<br/>
-     * 返回结果：String.<br/>
-     * 其它内容： JDK 1.6 QtServer 1.0.<br/>
+     * 
+     * 【方法名】 : 解密返回报文. <br/>
+     * 【作者】: Administrator .<br/>
+     * 【时间】： 2016年11月10日 下午3:32:55 .<br/>
+     * 【参数】： .<br/>
+     * @param dataStr 数据
+     * @param hzfPriKey 私钥
+     * @return 返回解密结果
+     * @throws QTException 解密异常<br/>
      */
     public static String analyData(String dataStr, PrivateKey hzfPriKey) throws QTException {
         String resXml = "";
@@ -194,7 +195,8 @@ public class PubWeiXin {
             resXml = new String(merchantXmlDataBytes, "UTF-8");
             LogPay.info("发送瑞银信返回报文[微信支付〉明文]：" + resXml);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogPay.error("解密瑞银信返回数据异常：" + e.getMessage());
+            throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, e.getMessage());
         }
         return resXml;
     }

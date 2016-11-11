@@ -24,6 +24,7 @@ import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
 import com.imobpay.base.util.EmptyChecker;
+import com.imobpay.base.util.Tools;
 
 /**
  * 
@@ -61,7 +62,7 @@ public class PayOuterServerImpl implements PayOuterServer {
             jym = param.get(Console_Column.SMS_SERVERJYM);
             String logKey = param.get(Console_Column.LOGKEYALL) + "";
             if (EmptyChecker.isEmpty(logKey) || "null".equals(logKey)) {
-                logKey = System.currentTimeMillis() + "";
+                logKey = Tools.getOnlyPK();
             }
             Thread.currentThread().setName(logKey);
             LogPay.info("请求内容:" + json);
@@ -77,7 +78,7 @@ public class PayOuterServerImpl implements PayOuterServer {
                 LogPay.error("未配置[JymFindServerConfig]中的交易码");
                 throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, Console_ErrCode.TRANS_ERROR);
             }
-            Object serverObj = applicationContext.getBean(jymStr);
+            Object serverObj = applicationContext.getBean(jymStr.trim());
             if (EmptyChecker.isEmpty(serverObj)) {
                 LogPay.error("[未定义" + serverObj + "]的对像或者没有注解");
                 throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);

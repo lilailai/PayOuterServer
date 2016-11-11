@@ -63,25 +63,6 @@
 		<include refid="paramSql"></include>
 	</select>
 
-	<select id="list" parameterMap="paramIdTbvFixMerchantLog"
-		resultMap="resultTbTbvFixMerchantLog">
-		<if test="pageflag==true">
-			SELECT * FROM (
-			SELECT A.*, ROWNUM RN FROM
-			(
-			SELECT * FROM TBV_FIX_MERCHANT_LOG WHERE 1=1
-			<include refid="paramSql"></include>
-			) A WHERE ROWNUM &lt;= #{curPage}*#{pageSize}
-			) WHERE RN &gt;=
-			(#{curPage}-1)*#{pageSize}
-		</if>
-		<if test="pageBlag==false">
-			SELECT * FROM TBV_FIX_MERCHANT_LOG
-			WHERE 1=1
-			<include refid="paramSql"></include>
-		</if>
-	</select>
-
 
 
 	<!-- 添加 -->

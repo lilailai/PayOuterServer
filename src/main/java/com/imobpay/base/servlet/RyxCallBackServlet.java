@@ -83,32 +83,38 @@ public class RyxCallBackServlet extends HttpServlet {
         String callBackUrl = "";
         String totalAmount = "";
         String settleDate = "";
+        String sendtcp = "";
         JSONObject resultData = new JSONObject();
         try {
             /** 添加线程号 */
             Thread.currentThread().setName(Tools.getOnlyPK());
             request.setCharacterEncoding("UTF8");
+            /** 获取报文内容 */
             String encryptData = request.getParameter("encryptData");
             String encryptKey = request.getParameter("encryptKey");
             String tranCode = request.getParameter("tranCode");
             reqMsgId = request.getParameter("reqMsgId");
 
+            /** 组装报文为json */
             JSONObject result = new JSONObject();
             result.put("encryptData", encryptData);
             result.put("encryptKey", encryptKey);
             result.put("tranCode", tranCode);
             result.put("reqMsgId", reqMsgId);
-            LogPay.info("回调未解析结果:" + result);
+            LogPay.info("未解析的回调结果:" + result);
             String callData = "";
+
+            /** 存在回调数据时应答瑞银信 */
             if (EmptyChecker.isNotEmpty(encryptData)) {
                 callData = result.toString();
                 response.getWriter().write("000000");
                 LogPay.info("交易：" + reqMsgId + " 应答瑞银信回调");
             } else {
                 LogPay.info("回调未返回数据");
-                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "支付异常");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "交易失败");
             }
 
+            /** 获取系统参数DAO对象 */
             tbvSysParamDao = (TbvSysParamDao<TbvSysParam>) applicationContext.getBean("tbvSysParamDao");
             /** 瑞银信的公钥 */
             TbvSysParam tbvSysParam = new TbvSysParam();
@@ -143,8 +149,9 @@ public class RyxCallBackServlet extends HttpServlet {
             Map<String, Object> keys = PubWeiXin.getKeys(keyMaps);
             PrivateKey hzfPriKey = (PrivateKey) keys.get("hzfPriKey");
 
+            /** 解密回到结果 */
             String callJStr = PubWeiXin.analyData(callData, hzfPriKey);
-            LogPay.info("交易：" + reqMsgId + "交易回调结果：" + callJStr.toString());
+            LogPay.info("交易" + reqMsgId + "的回调结果：" + callJStr.toString());
             JSONObject callJson = JSONObject.parseObject(callJStr);
             String resultCode = callJson.getString("respCode");
             String respType = "";
@@ -152,7 +159,6 @@ public class RyxCallBackServlet extends HttpServlet {
                 totalAmount = callJson.getString("totalAmount");
                 settleDate = callJson.getString("settleDate");
                 respType = callJson.getString("respType");
-
             }
 
             /** 调用查询接口 */
@@ -191,6 +197,16 @@ public class RyxCallBackServlet extends HttpServlet {
                 callBackUrl = tbvOutsideOrder.getUrl();
             }
 
+            /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
+            tbvSysParam.setParamname("wxPaySendTcp");
+            tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
+            if (EmptyChecker.isEmpty(tbvSysParam)) {
+                LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+            }
+            sendtcp = tbvSysParam.getParamvalue();
+
+            /** 交易成功 */
             if ("000000".equals(resultCode) && "000000".equals(queryRespCode)) {
                 if ("s".equalsIgnoreCase(oriRespType)) {
                     if (oriRespType.equals(respType)) {
@@ -198,14 +214,6 @@ public class RyxCallBackServlet extends HttpServlet {
                         resultData.put(Console_Column.P_MSG_CODE, "0000");
                         resultData.put(Console_Column.P_MSG_TEXT, "交易成功");
                         resultData.put(Console_Column.ORDERID, reqMsgId);
-                        /** 查询参数表TBV_SYS_PARAM-wxPaySendTcp */
-                        tbvSysParam.setParamname("wxPaySendTcp");
-                        tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
-                        if (EmptyChecker.isEmpty(tbvSysParam)) {
-                            LogPay.error("数据配置异常：未配置参数wxPaySendTcp");
-                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
-                        }
-                        String sendtcp = tbvSysParam.getParamvalue();
                         LogPay.info("发送队列名:" + sendtcp);
 
                         /** 调取核心记录交易流水信息 */
@@ -213,7 +221,8 @@ public class RyxCallBackServlet extends HttpServlet {
                         try {
                             jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
                         } catch (Exception e) {
-                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                            LogPay.error("回调核心队列失败：" + e.getMessage());
+                            throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, e.getMessage());
                         }
                         if (EmptyChecker.isEmpty(tbvOutsideOrder)) {
                             /** 调用消息下推 */
@@ -237,12 +246,12 @@ public class RyxCallBackServlet extends HttpServlet {
 
                         }
                     }
-                } else {
-                    /** 交易失败 */
-                    resultData.put("ORDERID", reqMsgId);
-                    resultData.put(Console_Column.P_MSG_CODE, "0088");
-                    resultData.put(Console_Column.P_MSG_TEXT, "交易失败");
                 }
+            } else {
+                /** 交易失败 */
+                resultData.put("ORDERID", reqMsgId);
+                resultData.put(Console_Column.P_MSG_CODE, "0088");
+                resultData.put(Console_Column.P_MSG_TEXT, "交易失败");
             }
 
         } catch (QTException e) {
@@ -252,6 +261,13 @@ public class RyxCallBackServlet extends HttpServlet {
         } finally {
             try {
                 if (EmptyChecker.isNotEmpty(outerOrder)) {
+                    /** 如果是外部订单，需要回调核心 */
+                    TiboJmsUntil jmsUntil = (TiboJmsUntil) applicationContext.getBean("tiboJmsUntil");
+                    try {
+                        jmsUntil.sendStreamMessage(sendtcp, "", false, resultData.toString(), System.currentTimeMillis() + "", "");
+                    } catch (Exception e) {
+                        LogPay.error("回调核心队列失败：" + e.getMessage());
+                    }
                     TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
                     tbvFixMerchantLog.setOrderid(outerOrder);
                     tbvFixMerchantLogDao = (TbvFixMerchantLogDao<TbvFixMerchantLog>) applicationContext.getBean("tbvFixMerchantLogDao");

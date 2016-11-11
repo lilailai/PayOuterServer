@@ -153,7 +153,7 @@ public class ServicesWeiXinSFZFImpl implements BusinessInterface {
             retJson.put(Console_Column.P_MSG_CODE, "0000");
             retJson.put(Console_Column.P_MSG_TEXT, "成功");
         } else {
-            retJson.put(Console_Column.P_MSG_CODE, "9999");
+            retJson.put(Console_Column.P_MSG_CODE, "0088");
             retJson.put(Console_Column.P_MSG_TEXT, "交易异常");
         }
         retJson.put("REQMSGID", reqMsgId);

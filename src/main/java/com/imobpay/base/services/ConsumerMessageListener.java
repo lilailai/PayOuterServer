@@ -105,7 +105,7 @@ public class ConsumerMessageListener implements MessageListener {
             }
 
             JSONObject jsons = (JSONObject) JSONObject.parse(jsonStr);
-            jym = jsons.get(Console_Column.SERVERJYM);
+            jym = jsons.get(Console_Column.SMS_SERVERJYM);
 
             String logKey = jsons.get(Console_Column.LOGKEYALL) + "";
             if (EmptyChecker.isEmpty(logKey) || "null".equals(logKey)) {

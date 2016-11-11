@@ -21,8 +21,8 @@ import com.imobpay.base.entity.TbvFixMerchantSafe;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.log.LogPay;
 import com.imobpay.base.services.PayOuterServer;
+import com.imobpay.base.services.util.EmptyChecker;
 import com.imobpay.base.util.Des3Util;
-import com.imobpay.base.util.EmptyChecker;
 import com.imobpay.base.util.MD5;
 import com.imobpay.base.util.Tools;
 
@@ -69,7 +69,7 @@ public class PayServerServlet extends HttpServlet {
         String resp = "";
         JSONObject json = new JSONObject();
         try {
-            // 添加线程号
+            /** 添加线程号 */
             Thread.currentThread().setName(Tools.getOnlyPK());
             LogPay.debug("---->SessionId-->" + request.getSession().getId());
 
@@ -90,7 +90,7 @@ public class PayServerServlet extends HttpServlet {
             tbvFixMerchantSafe = tbvFixMerchantSafeDao.selectById(tbvFixMerchantSafe);
             if (EmptyChecker.isEmpty(tbvFixMerchantSafe)) {
                 LogPay.error("数据配置异常：未配置参数密钥对象");
-                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.TRANS_ERROR);
             }
 
             extDes3Key = tbvFixMerchantSafe.getExtdes3key();
@@ -129,16 +129,21 @@ public class PayServerServlet extends HttpServlet {
                 LogPay.error("发送验签数据发送[" + sign + "]" + "内容使用：[" + (MD5.md5(data + extToken)) + "]");
                 throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, "数据被篡改,验签失败.");
             }
+
+            /** 调用服务处理业务 */
             PayOuterServer weiXinServer = (PayOuterServer) applicationContext.getBean("payOuterServerImpl");
             respData = weiXinServer.execute(reqJson.toString());
-
-            if (EmptyChecker.isNotEmpty(respData)) {
-                json = JSONObject.parseObject(respData);
+            if (EmptyChecker.isEmpty(respData)) {
+                LogPay.error("调用服务" + tranCode + "未返回数据");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
             }
-            response.setCharacterEncoding("UTF-8");
-            resp = json.toString();
-            LogPay.info("返回数据：" + resp);
+
+            /** 加密结果 */
             try {
+                json = JSONObject.parseObject(respData);
+                response.setCharacterEncoding("UTF-8");
+                resp = json.toString();
+                LogPay.info("返回数据：" + resp);
                 resp = Des3Util.Encrypt(resp, extDes3Key, iv);
                 resp = java.net.URLEncoder.encode(resp, "UTF-8");
             } catch (Exception e) {

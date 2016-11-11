@@ -148,7 +148,7 @@ public class ServicesWeiXinQueryImpl implements BusinessInterface {
             retJson.put(Console_Column.P_MSG_CODE, "0000");
             retJson.put(Console_Column.P_MSG_TEXT, "成功");
         } else {
-            retJson.put(Console_Column.P_MSG_CODE, resultCode);
+            retJson.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_88_ERR_TXN);
             retJson.put(Console_Column.P_MSG_TEXT, resultDesc);
         }
         return retJson.toString();

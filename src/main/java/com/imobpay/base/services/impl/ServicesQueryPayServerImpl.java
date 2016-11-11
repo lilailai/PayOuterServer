@@ -41,7 +41,7 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
     TbvOutsideOrderDao<TbvOutsideOrder>     tbvOutsideOrderDao;
     /** 上下文对象 */
     @Resource
-    private ApplicationContext              applicationContext;
+    ApplicationContext                      applicationContext;
 
     @Override
     public String execute(String reqParame) throws QTException {
@@ -85,20 +85,24 @@ public class ServicesQueryPayServerImpl implements BusinessInterface {
         }
         String innerOrder = tbvOutsideOrder.getOrderId();
 
+        /** 组装报文 */
         reqJson.put(Console_Column.ORI_REQMSGID, innerOrder);
         reqJson.put(Console_Column.REQDATE, oReqTrandate + oReqTrantime);
+        /** 获取微信接口bean */
         Object obj = applicationContext.getBean("servicesWeiXinQueryImpl");
         if (EmptyChecker.isEmpty(obj)) {
             LogPay.error("[未定义" + obj + "]的对像或者没有注解");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /** 调用微信查询接口 */
         BusinessInterface bean = (BusinessInterface) obj;
         String result = bean.execute(reqJson.toString());
         if (EmptyChecker.isEmpty(result)) {
+            LogPay.error("调用微信查询接口未返回数据");
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
         }
 
-        /** 处理返回报文 */
+        /** 处理微信查询接口返回报文 */
         JSONObject retJson = JSONObject.parseObject(result);
         String pcode = "";
         String totalAmount = "";

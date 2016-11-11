@@ -22,12 +22,12 @@
 	<!-- 设置队列监听名称 -->
 
 	<bean id="queueDestination" class="com.tibco.tibjms.TibjmsQueue">
-		<constructor-arg value="${tibco_wexin_in}" />
+		<constructor-arg value="${tibco_payserver_in}" />
 	</bean>
 	<!-- 设置队列监听 -->
 
 	<bean id="consumerMessageListener" class="com.imobpay.base.services.ConsumerMessageListener">
-		<property name="sendTibcoOutName" value="${tibco_wexin_out}" />
+		<property name="sendTibcoOutName" value="${tibco_payserver_out}" />
 		<property name="encode" value="${tibco_user_encode}" />
 	</bean>
 	<!-- 启动jms监听容器 -->
