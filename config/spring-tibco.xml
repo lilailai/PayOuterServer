@@ -28,7 +28,6 @@
 
 	<bean id="consumerMessageListener" class="com.imobpay.base.services.ConsumerMessageListener">
 		<property name="sendTibcoOutName" value="${tibco_payserver_out}" />
-		<property name="encode" value="${tibco_user_encode}" />
 	</bean>
 	<!-- 启动jms监听容器 -->
 

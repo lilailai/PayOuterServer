@@ -62,7 +62,7 @@ public class ConsumerMessageListener implements MessageListener {
     /** 编码格式 */
     private String      encode           = "GBK";
     /** 是否返回 */
-    private String      flagReturn       = "true";
+    private String      flagReturn       = "false";
 
     /** Spring对像 */
     @Resource
