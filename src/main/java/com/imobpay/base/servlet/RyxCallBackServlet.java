@@ -133,14 +133,7 @@ public class RyxCallBackServlet extends HttpServlet {
                 LogPay.error("数据配置异常：未配置参数PRIVATEKEY");
                 throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
             }
-            String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJ1T7wakWkCc86so" + "9p8IPVX6UqboRm8M6Usco979bNO8U9Z3xBrBL+OUtCQtLjDlkD+mCkOfwlDSSm5V"
-                    + "gVSsJt59eQuf2k58r8mZ+MU9jtpA94Zz/O9JCyK8F0TiEwGzHdf5HG/ttmFkX+8A" + "3Wg2rk8+RMnrbcjBtAa/dObE6UojAgMBAAECgYBtN69ftQjSgiLGV5GdpWKvJS/r"
-                    + "nqQGw7fQ5Pj9/IBoHP02jb4dtK9CFiFYW+UNHNCe3u2RNH75DIOPRNybo0b3Zw1o" + "W2GpMmZBOpA5Nm+A1YCQGeQ0Ca9Fg01dOFz8pxGMicS1dIauFGi883fOvg9MFsxm"
-                    + "Pn5OTsk64g0ud704gQJBAMod5oH3jshzxUTD1nUbJkUUIRIy4KEnh+oj33dSJWa7" + "O7jmmh5fI1v0tspTuEYeWSH/gKhL1Ne0Ul3k60EdsxsCQQDHRUVjVRsmzPHTvFED"
-                    + "X1xEQ7JMeRZGdUcT7S5gYzODt/vA/bS3jLSVujaRnw6St5uBjTESq8L0Q82Gp4W6" + "YK2ZAkBXlsebER5Wbh1SJJBepYpbK1L9oQDJtejnpe4ktnuw3nkOMxkdClu3cQB6"
-                    + "A/f6oxI7co9d36b4Z5O+TwNIb8d7AkAlTtTU6iQxOYG1MLbCOOJfbYU+SBVhj6eF" + "FYzvQuNsL9AUq+tfyhotRjXdQbhKw9F7ieG8KyhO7zrVkRu6b0tRAkBxy1fBpUny"
-                    + "CKx2Qi7NomRamTw5Nlmb6yQPU8lb6d4FbRGB7rDmbmrZJYP8VOY6YRR4jj4fhyxx" + "gu+lOODmLr6/";
-            // String privateKey = tbvSysParam.getParamvalue();
+            String privateKey = tbvSysParam.getParamvalue();
 
             /** 获取公私钥对象 */
             Map<String, Object> keyMaps = new HashMap<String, Object>();
