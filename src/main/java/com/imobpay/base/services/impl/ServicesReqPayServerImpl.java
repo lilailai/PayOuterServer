@@ -91,12 +91,6 @@ public class ServicesReqPayServerImpl implements BusinessInterface {
         tbvFixMerchantLog.setReqtime(oReqTrandate + oReqTrantime);
         tbvFixMerchantLogDao.insert(tbvFixMerchantLog);
 
-        /** 记录临时表 */
-        Tmpcwj tmpcwj = new Tmpcwj();
-        tmpcwj.setOrderid(ordrId);
-        tmpcwj.setStatus("1");
-        mpcwjDao.insert(tmpcwj);
-
         /** 查询参数表TBV_SYS_PARAM-PAY_WEIXIN_MERCHANTID */
         TbvSysParam tbvSysParamPc = new TbvSysParam();
         tbvSysParamPc.setParamname(Console_Column.PAY_WEIXIN_MERCHANTID);

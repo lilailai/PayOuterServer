@@ -78,18 +78,26 @@ public class RyxCallBackServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        /** 请求流水号 */
         String reqMsgId = "";
+        /** 外部订单号 */
         String outerOrder = "";
+        /**回到地址 */
         String callBackUrl = "";
+        /**交易金额 */
         String totalAmount = "";
+        /** 对账日期 */
         String settleDate = "";
+        /** 调用核心的队列 */
         String sendtcp = "";
+        /** 返回结果集 */
         JSONObject resultData = new JSONObject();
         try {
             /** 添加线程号 */
             Thread.currentThread().setName(Tools.getOnlyPK());
+            /**设置请求参数编码格式y */
             request.setCharacterEncoding("UTF8");
-            /** 获取报文内容 */
+            /** 获取报文内容 请求数据，key，交易码 */
             String encryptData = request.getParameter("encryptData");
             String encryptKey = request.getParameter("encryptKey");
             String tranCode = request.getParameter("tranCode");
@@ -133,14 +141,7 @@ public class RyxCallBackServlet extends HttpServlet {
                 LogPay.error("数据配置异常：未配置参数PRIVATEKEY");
                 throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
             }
-            String privateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJ1T7wakWkCc86so" + "9p8IPVX6UqboRm8M6Usco979bNO8U9Z3xBrBL+OUtCQtLjDlkD+mCkOfwlDSSm5V"
-                    + "gVSsJt59eQuf2k58r8mZ+MU9jtpA94Zz/O9JCyK8F0TiEwGzHdf5HG/ttmFkX+8A" + "3Wg2rk8+RMnrbcjBtAa/dObE6UojAgMBAAECgYBtN69ftQjSgiLGV5GdpWKvJS/r"
-                    + "nqQGw7fQ5Pj9/IBoHP02jb4dtK9CFiFYW+UNHNCe3u2RNH75DIOPRNybo0b3Zw1o" + "W2GpMmZBOpA5Nm+A1YCQGeQ0Ca9Fg01dOFz8pxGMicS1dIauFGi883fOvg9MFsxm"
-                    + "Pn5OTsk64g0ud704gQJBAMod5oH3jshzxUTD1nUbJkUUIRIy4KEnh+oj33dSJWa7" + "O7jmmh5fI1v0tspTuEYeWSH/gKhL1Ne0Ul3k60EdsxsCQQDHRUVjVRsmzPHTvFED"
-                    + "X1xEQ7JMeRZGdUcT7S5gYzODt/vA/bS3jLSVujaRnw6St5uBjTESq8L0Q82Gp4W6" + "YK2ZAkBXlsebER5Wbh1SJJBepYpbK1L9oQDJtejnpe4ktnuw3nkOMxkdClu3cQB6"
-                    + "A/f6oxI7co9d36b4Z5O+TwNIb8d7AkAlTtTU6iQxOYG1MLbCOOJfbYU+SBVhj6eF" + "FYzvQuNsL9AUq+tfyhotRjXdQbhKw9F7ieG8KyhO7zrVkRu6b0tRAkBxy1fBpUny"
-                    + "CKx2Qi7NomRamTw5Nlmb6yQPU8lb6d4FbRGB7rDmbmrZJYP8VOY6YRR4jj4fhyxx" + "gu+lOODmLr6/";
-            // String privateKey = tbvSysParam.getParamvalue();
+            String privateKey = tbvSysParam.getParamvalue();
 
             /** 获取公私钥对象 */
             Map<String, Object> keyMaps = new HashMap<String, Object>();
@@ -152,9 +153,13 @@ public class RyxCallBackServlet extends HttpServlet {
             /** 解密回到结果 */
             String callJStr = PubWeiXin.analyData(callData, hzfPriKey);
             LogPay.info("交易" + reqMsgId + "的回调结果：" + callJStr.toString());
+
+            /**回调结果转为json */
             JSONObject callJson = JSONObject.parseObject(callJStr);
+            /** 获取返回码 */
             String resultCode = callJson.getString("respCode");
             String respType = "";
+            /** 成功时获取返回类型和对账期日，返回类型 */
             if ("000000".equals(resultCode)) {
                 totalAmount = callJson.getString("totalAmount");
                 settleDate = callJson.getString("settleDate");
@@ -206,9 +211,11 @@ public class RyxCallBackServlet extends HttpServlet {
             }
             sendtcp = tbvSysParam.getParamvalue();
 
-            /** 交易成功 */
+            /** 如果两次返回码均为成功 交易成功 */
             if ("000000".equals(resultCode) && "000000".equals(queryRespCode)) {
+                /** 返回类型必须为s */
                 if ("s".equalsIgnoreCase(oriRespType)) {
+                    /** 回调和查询必须返回类型一致 */
                     if (oriRespType.equals(respType)) {
                         LogPay.info("交易：" + reqMsgId + "回调与查询结果一致");
                         resultData.put(Console_Column.P_MSG_CODE, "0000");
@@ -224,6 +231,8 @@ public class RyxCallBackServlet extends HttpServlet {
                             LogPay.error("回调核心队列失败：" + e.getMessage());
                             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, e.getMessage());
                         }
+                        
+                        /** 如果不是合作方调用，则调用下推 */
                         if (EmptyChecker.isEmpty(tbvOutsideOrder)) {
                             /** 调用消息下推 */
                             JSONObject pushData = new JSONObject();
@@ -243,7 +252,6 @@ public class RyxCallBackServlet extends HttpServlet {
                             } else {
                                 LogPay.info("消息下推返回：" + rs);
                             }
-
                         }
                     }
                 }
@@ -267,7 +275,9 @@ public class RyxCallBackServlet extends HttpServlet {
             resultData.put(Console_Column.P_MSG_TEXT, e.getMessage());
         } finally {
             try {
+                /** 如果是外部订单，需要回调合作方 */
                 if (EmptyChecker.isNotEmpty(outerOrder)) {
+                    /** 查询日志报，取合作方的流水号 */
                     TbvFixMerchantLog tbvFixMerchantLog = new TbvFixMerchantLog();
                     tbvFixMerchantLog.setOrderid(outerOrder);
                     tbvFixMerchantLogDao = (TbvFixMerchantLogDao<TbvFixMerchantLog>) applicationContext.getBean("tbvFixMerchantLogDao");
@@ -276,14 +286,18 @@ public class RyxCallBackServlet extends HttpServlet {
                         throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
                     }
                     String oSerialid = tbvFixMerchantLog.getMerchantcode();
+                    
+                    /** 填充返回给合作方的报文 流水号，金额，订单号，对账日期*/
                     resultData.put(Console_Column.O_SERIALID, oSerialid);
                     resultData.put(Console_Column.TOTALAMOUNT, totalAmount);
                     resultData.put("ORDERID", outerOrder);
                     resultData.put("SETTLEDATE", settleDate);
+                    /** 设置返回编码 */
                     response.setCharacterEncoding("UTF-8");
                     String resp = JSONObject.toJSONString(resultData, SerializerFeature.WriteMapNullValue);
                     LogPay.info("返回合作方数据：" + resp);
-                    /** 获取密钥对像 */
+                    
+                    /** 根据机构号获取密钥对像 */
                     String agentId = tbvFixMerchantLog.getAgencyId();
                     TbvFixMerchantSafe tbvFixMerchantSafe = new TbvFixMerchantSafe();
                     tbvFixMerchantSafe.setAgencyId(agentId);
@@ -293,7 +307,8 @@ public class RyxCallBackServlet extends HttpServlet {
                         LogPay.error("数据配置异常：未配置参数密钥对象");
                         throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.NO_DBPARAM);
                     }
-
+                    
+                    /** 获取3deskey */
                     String extDes3Key = tbvFixMerchantSafe.getExtdes3key();
                     extDes3Key = EmptyChecker.isNotEmpty(extDes3Key) ? extDes3Key : "123456789123456789123456";
                     String extToken = tbvFixMerchantSafe.getExttoken();

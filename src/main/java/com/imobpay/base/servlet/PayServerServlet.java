@@ -62,8 +62,11 @@ public class PayServerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         long reqRime = System.currentTimeMillis();
+        /** 返回数据 */
         String respData = "";
+        /** 获取3deskey */
         String extDes3Key = "";
+        /** token */
         String extToken = "";
         byte[] iv = null;
         String resp = "";
@@ -72,7 +75,7 @@ public class PayServerServlet extends HttpServlet {
             /** 添加线程号 */
             Thread.currentThread().setName(Tools.getOnlyPK());
             LogPay.debug("---->SessionId-->" + request.getSession().getId());
-
+            /** 获取请求数据 :加密后的数据集，sign，机构号 */
             String data = request.getParameter(Console_Column.RECEIVEDATA);
             String sign = request.getParameter(Console_Column.RECEIVESIGN);
             String bid = request.getParameter(Console_Column.RECEIVEBRD);
@@ -92,11 +95,15 @@ public class PayServerServlet extends HttpServlet {
                 LogPay.error("数据配置异常：未配置参数密钥对象");
                 throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, Console_ErrCode.TRANS_ERROR);
             }
-
+            /** 获取3deskey */
             extDes3Key = tbvFixMerchantSafe.getExtdes3key();
+            /** 如果3des为空转为默认key */
             extDes3Key = EmptyChecker.isNotEmpty(extDes3Key) ? extDes3Key : "123456789123456789123456";
+            /** 获取token */
             extToken = tbvFixMerchantSafe.getExttoken();
+            /**token为空转为默认 */
             extToken = EmptyChecker.isNotEmpty(extToken) ? extToken : "123456";
+            /** 获取盐值 */
             String byteiv = tbvFixMerchantSafe.getByteiv();
             iv = new byte[] {};
             if (EmptyChecker.isNotEmpty(byteiv)) {
@@ -121,10 +128,11 @@ public class PayServerServlet extends HttpServlet {
             Object branchid = reqJson.get(Console_Column.P_BRDID);
             Object tranCode = reqJson.get(Console_Column.SMS_SERVERJYM);
 
-            /** 判断必填参数 */
+            /** 判断必填参数机构号和交易码 */
             if (EmptyChecker.isEmpty(branchid) || EmptyChecker.isEmpty(tranCode)) {
                 throw new QTException(Console_ErrCode.RESP_CODE_03_ERR_PRARM, "参数错误：缺少必须参数、或必须参数不合法");
             }
+            /** 验签数据 */
             if (!checkSign(str, extToken, sign)) {
                 LogPay.error("发送验签数据发送[" + sign + "]" + "内容使用：[" + (MD5.md5(data + extToken)) + "]");
                 throw new QTException(Console_ErrCode.RESP_CODE_12_ERR_SIGN, "数据被篡改,验签失败.");

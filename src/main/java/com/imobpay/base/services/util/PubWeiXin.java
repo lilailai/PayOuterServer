@@ -63,14 +63,21 @@ public class PubWeiXin {
         byte[] reqDataByte;
         List<NameValuePair> nvps = new LinkedList<NameValuePair>();
         try {
+            /** 获取指定编码字节流 */
             reqDataByte = reqData.getBytes("UTF-8");
+            /** 生成AES密钥key */
             String keyStr = AESUtil.getAESKey();
+            /** 生成AES密钥key字节流 */
             byte[] keyBytes = keyStr.getBytes("UTF-8");
+            /** 对请求数据进行AES加密，并进行base64编码 */
             String encryptData = new String(Base64.encodeBase64(CryptoUtil.AESEncrypt(reqDataByte, keyBytes, "AES", "AES/ECB/PKCS5Padding", null)), "UTF-8");
+            /** 对请求数据进行哈希签名RSA加密，并进行base64编码 */
             String signData = new String(Base64.encodeBase64(CryptoUtil.digitalSign(reqDataByte, hzfPriKey, "SHA1WithRSA")), "UTF-8");
+            /** 对AES进行RSA加密，并进行base64编码 */
             String encrtptKey = new String(Base64.encodeBase64(CryptoUtil.RSAEncrypt(keyBytes, yhPubKey, 2048, 11, "RSA/ECB/PKCS1Padding")), "UTF-8");
-
+            /** 获取回调参数和合作号 */
             String[] paras = reqParaStr.split("#");
+            /** 打印日志 */
             LogPay.info("encryptData:" + encryptData);
             LogPay.info("encryptKey:" + encrtptKey);
             LogPay.info("cooperator:" + paras[1]);
@@ -78,7 +85,7 @@ public class PubWeiXin {
             LogPay.info("tranCode:" + tranCode);
             LogPay.info("callBack:" + paras[0]);
             LogPay.info("reqMsgId:" + reqMsgId);
-
+            /** 封装请求数据到 Open Declaration List<NameValuePair>*/
             nvps.add(new BasicNameValuePair("encryptData", encryptData));
             nvps.add(new BasicNameValuePair("encryptKey", encrtptKey));
             nvps.add(new BasicNameValuePair("cooperator", paras[1]));
@@ -90,16 +97,18 @@ public class PubWeiXin {
             LogPay.error("加密数据异常:" + e.getMessage());
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "加密数据异常");
         }
-
+        /**向瑞银信发送请求*/
         String respStr = HttpClient.post(url, nvps);
 
         LogPay.info("发送瑞银信返回报文[微信支付]：" + respStr);
+        /** 运营商未返回数据*/
         if (EmptyChecker.isEmpty(respStr)) {
             LogPay.error("发送瑞银信未返回结果");
             throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "运营商未响应");
         }
-
+        /** 将返回数据转为json格式*/
         JSONObject jsonObject = JSONObject.parseObject(respStr);
+        /** 如果返回数据存在返回码 则代表返回数据不需要解密，可以直接返回*/
         boolean boo = jsonObject.containsKey("respCode");
         if (boo) {
             String txt = jsonObject.getString("respMsg");
@@ -109,7 +118,7 @@ public class PubWeiXin {
     }
 
     /**
-     * getKeys:(这里用一句话描述这个方法的作用). <br/>
+     * getKeys:创建X509EncodedKeySpec 对象. <br/>
      * 方法名： getKeys.<br/>
      * author：曹文军.<br/>
      * 创建日期：2016年9月1日.<br/>

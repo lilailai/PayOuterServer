@@ -36,7 +36,9 @@ public class ServicesWeiXinSFZFImpl implements BusinessInterface {
 
     @Override
     public String execute(String reqParame) throws QTException {
+        /** 接收参数 */
         JSONObject reqJson = JSONObject.parseObject(reqParame);
+        /** 判断必填参数 */
         EmptyChecker.checkEmptyJson(reqJson, Console_Column.SCENE, Console_Column.TOTALAMOUNT, Console_Column.REQMSGID, Console_Column.MERCHANTCODE, Console_Column.SUBJECT, Console_Column.MSGTYPE,
                 Console_Column.REQDATE, Console_Column.PAYWAY, Console_Column.SHOPNAME, Console_Column.TOTALFEE);
 
@@ -60,13 +62,15 @@ public class ServicesWeiXinSFZFImpl implements BusinessInterface {
             LogPay.error("数据配置异常：未配置参数RYXVERSION");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /** 报文版本号 */
         String versionNo = tbvSysParamVersion.getParamvalue();
 
-        /** 发送数据 */
+        /** 发送数据公共报文头组装 */
         JSONObject json = new JSONObject(true);
         json.put("version", versionNo);
         json.put("msgType", msgType);
         json.put("reqDate", reqDate);
+        /** 发送数据文头组装 */
         JSONObject reqDatas = new JSONObject(true);
         reqDatas.put("merchantCode", merchantCode);
         reqDatas.put("payWay", payWay);
@@ -82,42 +86,50 @@ public class ServicesWeiXinSFZFImpl implements BusinessInterface {
         TbvSysParam tbvSysParamUrl = new TbvSysParam();
         tbvSysParamUrl.setParamname("WXZFURL");
         tbvSysParamUrl = tbvSysParamDao.selectById(tbvSysParamUrl);
+        /** 判断是否查到地址 */
         if (EmptyChecker.isEmpty(tbvSysParamUrl)) {
             LogPay.error("数据配置异常：未配置参数WXZFURL");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /** 获取地址 */
         String wxzfUrl = tbvSysParamUrl.getParamvalue();
 
         /** 查询参数表TBV_SYS_PARAM-请求参数 */
         TbvSysParam tbvSysParamReqPara = new TbvSysParam();
         tbvSysParamReqPara.setParamname("REQPARAM");
         tbvSysParamReqPara = tbvSysParamDao.selectById(tbvSysParamReqPara);
+        /** 判断是否取到请求参数 */
         if (EmptyChecker.isEmpty(tbvSysParamReqPara)) {
             LogPay.error("数据配置异常：未配置参数REQPARAM");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /**获取请求参数 */
         String callBackUrl = tbvSysParamReqPara.getParamvalue();
 
         /**瑞银信的公钥*/
         TbvSysParam tbvSysParam = new TbvSysParam();
         tbvSysParam.setParamname("PUBLICKKEY");
         tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
+        /**判断是否取到公钥对象 */
         if (EmptyChecker.isEmpty(tbvSysParam)) {
             LogPay.error("数据配置异常：未配置参数PUBLICKKEY");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /**获取公钥对象 */
         String publickKey = tbvSysParam.getParamvalue();
 
         /** 私钥 */
         tbvSysParam.setParamname("PRIVATEKEY");
         tbvSysParam = tbvSysParamDao.selectById(tbvSysParam);
+        /**判断是否取到私钥对象 */
         if (EmptyChecker.isEmpty(tbvSysParam)) {
             LogPay.error("数据配置异常：未配置参数PRIVATEKEY");
             throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "未知系统异常");
         }
+        /**获取私钥对象 */
         String privateKey = tbvSysParam.getParamvalue();
 
-        /** 获取公私钥对象*/
+        /** 编码公私钥对象*/
         Map<String, Object> keyMaps = new HashMap<String, Object>();
         keyMaps.put("publickKey", publickKey);
         keyMaps.put("privateKey", privateKey);
@@ -127,7 +139,7 @@ public class ServicesWeiXinSFZFImpl implements BusinessInterface {
 
         /** 需要加密的数据集*/
         Map<String, Object> datas = new HashMap<String, Object>();
-        /** 加密数据 */
+        /** 组装完整报文数据*/
         datas.put("reqData", json);
         datas.put("reqMsgId", reqMsgId);
         datas.put("tranCode", "SMZF002");
