@@ -60,10 +60,12 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
     public String execute(String reqParame) throws QTException {
         /** 接收请求报文  */
         JSONObject reqJson = JSONObject.parseObject(reqParame);
+        /** 返回报文对象 */
         JSONObject retJson = new JSONObject();
+        /** 校验必传参数  */
         EmptyChecker.checkEmptyJson(reqJson, Console_Column.REQMSGID, Console_Column.WX_MSG_TRADE_TYPE, Console_Column.WX_MSG_TEM_CONTENT_COUNT);
 
-        /** 接收参数  */
+        /** 接收参数订单号，下推模板类型，模板内容个数  */
         String reqMsgId = reqJson.getString(Console_Column.REQMSGID);
         String tradeType = reqJson.getString(Console_Column.WX_MSG_TRADE_TYPE);
         String contentCnt = reqJson.getString(Console_Column.WX_MSG_TEM_CONTENT_COUNT);
