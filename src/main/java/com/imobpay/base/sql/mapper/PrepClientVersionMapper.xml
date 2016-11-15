@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.PrepClientVersionDao">
+
+
+	<sql id="paramSql">
+		<!-- 此处一定要增加一个查询 -->
+		<if test="updateversion !=null and updateversion !=''">
+			AND UPDATEVERSION = #{updateversion}
+		</if>
+		<if test="updatePath !=null and updatePath !=''">
+			AND UPDATE_PATH = #{updatePath}
+		</if>
+		<if test="isMustUpdate !=null and isMustUpdate !=''">
+			AND IS_MUST_UPDATE = #{isMustUpdate}
+		</if>
+		<if test="updateContent !=null and updateContent !=''">
+			AND UPDATE_CONTENT = #{updateContent}
+		</if>
+		<if test="instrVersion !=null and instrVersion !=''">
+			AND INSTR_VERSION = #{instrVersion}
+		</if>
+		<if test="key !=null and key !=''">
+			AND KEY = #{key}
+		</if>
+		<if test="clientAlias !=null and clientAlias !=''">
+			AND CLIENT_ALIAS = #{clientAlias}
+		</if>
+		<if test="versionstatus !=null and versionstatus !=''">
+			AND VERSIONSTATUS = #{versionstatus}
+		</if>
+		<if test="branchid !=null and branchid !=''">
+			AND BRANCHID = #{branchid}
+		</if>
+		<if test="shopno !=null and shopno !=''">
+			AND SHOPNO = #{shopno}
+		</if>
+		<if test="clientVersion !=null and clientVersion !=''">
+			AND CLIENT_VERSION = #{clientVersion}
+		</if>
+		<if test="clientType !=null and clientType !=''">
+			AND CLIENT_TYPE = #{clientType}
+		</if>
+		<if test="appuser !=null and appuser !=''">
+			AND APPUSER = #{appuser}
+		</if>
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.PrepClientVersion" id="paramIdPrepClientVersion">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="updateversion" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="updatePath" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="isMustUpdate" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="updateContent" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="instrVersion" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="key" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="clientAlias" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="versionstatus" javaType="String" jdbcType="CHAR" mode="IN" />
+		<parameter property="branchid" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="shopno" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="clientVersion" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="clientType" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="appuser" javaType="String" jdbcType="VARCHAR" mode="IN" />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.PrepClientVersion" id="resultTbPrepClientVersion">
+		<result column="UPDATEVERSION" property="updateversion" javaType="String" jdbcType="VARCHAR" />
+		<result column="UPDATE_PATH" property="updatePath" javaType="String" jdbcType="VARCHAR" />
+		<result column="IS_MUST_UPDATE" property="isMustUpdate" javaType="Integer" jdbcType="NUMERIC" />
+		<result column="UPDATE_CONTENT" property="updateContent" javaType="String" jdbcType="VARCHAR" />
+		<result column="INSTR_VERSION" property="instrVersion" javaType="String" jdbcType="VARCHAR" />
+		<result column="KEY" property="key" javaType="String" jdbcType="VARCHAR" />
+		<result column="CLIENT_ALIAS" property="clientAlias" javaType="String" jdbcType="VARCHAR" />
+		<result column="VERSIONSTATUS" property="versionstatus" javaType="String" jdbcType="CHAR" />
+		<result column="BRANCHID" property="branchid" javaType="String" jdbcType="VARCHAR" />
+		<result column="SHOPNO" property="shopno" javaType="String" jdbcType="VARCHAR" />
+		<result column="CLIENT_VERSION" property="clientVersion" javaType="String" jdbcType="VARCHAR" />
+		<result column="CLIENT_TYPE" property="clientType" javaType="String" jdbcType="VARCHAR" />
+		<result column="APPUSER" property="appuser" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdPrepClientVersion" resultMap="resultTbPrepClientVersion">
+		SELECT * FROM PREP_CLIENT_VERSION WHERE ROWNUM = 1
+		<include refid="paramSql"></include>
+	</select>
+
+</mapper>

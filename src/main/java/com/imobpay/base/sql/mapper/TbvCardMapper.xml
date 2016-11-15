@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvCardDao">
+
+
+	<sql id="paramSql">
+		<!-- 此处一定要增加一个查询 -->
+		<if test="branchid !=null and branchid !=''">
+			AND BRANCHID = #{branchid}
+		</if>
+		<if test="url !=null and url !=''">
+			AND URL = #{url}
+		</if>
+		<if test="createdate !=null and createdate !=''">
+			AND CREATEDATE = #{createdate}
+		</if>
+		<if test="status !=null and status !=''">
+			AND STATUS = #{status}
+		</if>
+		<if test="taaccount !=null and taaccount !=''">
+			AND TAACCOUNT = #{taaccount}
+		</if>
+		<if test="taaccountmac !=null and taaccountmac !=''">
+			AND TAACCOUNTMAC = #{taaccountmac}
+		</if>
+		<if test="bindflag !=null and bindflag !=''">
+			AND BINDFLAG = #{bindflag}
+		</if>
+		<if test="type !=null and type !=''">
+			AND TYPE = #{type}
+		</if>
+		<if test="feeid !=null and feeid !=''">
+			AND FEEID = #{feeid}
+		</if>
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.TbvCard" id="paramIdTbvCard">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="branchid" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="url" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="createdate" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="taaccount" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="taaccountmac" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="bindflag" javaType="String" jdbcType="VARCHAR" mode="IN" />
+
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvCard" id="resultTbTbvCard">
+		<result column="BRANCHID" property="branchid" javaType="String" jdbcType="VARCHAR" />
+		<result column="URL" property="url" javaType="String" jdbcType="VARCHAR" />
+		<result column="CREATEDATE" property="createdate" javaType="String" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="TAACCOUNT" property="taaccount" javaType="String" jdbcType="VARCHAR" />
+		<result column="BRANCHNAME" property="branchname" javaType="String" jdbcType="VARCHAR" />
+		<result column="TAACCOUNTMAC" property="taaccountmac" javaType="String" jdbcType="VARCHAR" />
+		<result column="BINDFLAG" property="bindflag" javaType="String" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" javaType="String" jdbcType="VARCHAR" />
+		<result column="FEEID" property="feeid" javaType="String" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<!-- 插入手刷用户的瑞码 -->
+
+	<insert id="insert" parameterMap="paramIdTbvCard">
+		insert into tbv_card ( taaccount, url, branchid, status, createdate, taaccountmac, bindflag,type,feeid)
+		values
+		(
+		#{taaccount,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{branchid,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{createdate,jdbcType=VARCHAR},
+		#{taaccountmac,jdbcType=VARCHAR},
+		#{bindflag,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{feeid,jdbcType=VARCHAR}
+		)
+	</insert>
+
+
+	<select id="selectById" parameterMap="paramIdTbvCard" resultMap="resultTbTbvCard">
+		SELECT tc.taaccount, tc.url, tc.branchid, tb.branchname,tc.bindflag,tc.type
+		FROM TBV_CARD tc
+		left
+		join tbv_branch tb
+		on tc.branchid = tb.branchid
+		WHERE ROWNUM =
+		1
+		<if test="taaccountmac !=null and taaccountmac !=''">
+			AND TAACCOUNTMAC = #{taaccountmac}
+		</if>
+		<if test="taaccount !=null and taaccount !=''">
+			AND TAACCOUNT = #{taaccount}
+		</if>
+	</select>
+	<!-- 修改TA卡的状态 -->
+	<update id="update">
+		update tbv_card t set t.bindflag='1' where t.taaccount=#{taaccount}
+	</update>
+
+</mapper>
