@@ -42,7 +42,7 @@ import com.imobpay.base.util.HttpHelper;
  *
  */
 @Service
-public class ServicesWeiXinMsgPush implements BusinessInterface {
+public class ServicesWeiXinMsgPushImpl implements BusinessInterface {
     /** 微信参数表 */
     @Resource
     TbvPayjnlsDao<TbvPayjnls>         tbvPayjnlsDao;
@@ -83,7 +83,8 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             String taaccount = tbvPayjnls.getTaaccount();
             String localdate = tbvPayjnls.getLocaldate();
             String localtime = tbvPayjnls.getLocaltime();
-            String issuingAmount = tbvPayjnls.getIssuingAmount().toString();
+            Integer issuingAmountint = tbvPayjnls.getIssuingAmount();
+            String issuingAmount = issuingAmountint == null ? "" : issuingAmountint.toString();
             String tid = tbvPayjnls.getTid();
             String accountno = tbvPayjnls.getAccountno();
             String paytype = tbvPayjnls.getPaytype();
@@ -104,6 +105,7 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
 
             /** 查询公众号描述 */
             TbvBranchParam tbvBranchParam = new TbvBranchParam();
+            tbvBranchParam.setBranchid(branchId);
             tbvBranchParam = tbvBranchParamDao.selectById(tbvBranchParam);
             if (EmptyChecker.isEmpty(tbvBranchParam)) {
                 throw new QTException(Console_ErrCode.TRANS_ERROR, "交易异常，请联系客服");
@@ -174,8 +176,12 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             String payServerUrl = tbvSysParam.getParamvalue();
             String method = HttpHelper.post(payServerUrl, firstValJson.toString(), "UTF-8", "UTF-8");
             LogPay.info("微信消息下推返回报文:" + method);
-            retJson.put(Console_Column.P_MSG_CODE, "0000");
-            retJson.put(Console_Column.P_MSG_TEXT, "下推成功");
+            if (EmptyChecker.isEmpty(method)) {
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "下推失败");
+            }
+            JSONObject rs = JSONObject.parseObject(method);
+            retJson.put(Console_Column.P_MSG_CODE, rs.getString("msgcode"));
+            retJson.put(Console_Column.P_MSG_TEXT, rs.getString("msgtext"));
         } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
             retJson.put(Console_Column.P_MSG_CODE, "0099");
