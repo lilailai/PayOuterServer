@@ -95,10 +95,6 @@ public class ServicesTest {
         item.put("REQMSGID", "2016090817184900000267");
         item.put("WX_MSG_TRADE_TYPE", "WxMsgTrade");
         item.put("WX_MSG_TEM_CONTENT_COUNT", "3");
-        item.put("MSGTYPE", "WXZF");
-        item.put("MSGTYPE", "WXZF");
-        item.put("MSGTYPE", "WXZF");
-        item.put("MSGTYPE", "WXZF");
 
         return item;
     }
