@@ -76,7 +76,7 @@ public class ServicesWeiXinMsgPushImpl implements BusinessInterface {
             tbvPayjnls.setOrderId(reqMsgId);
             tbvPayjnls = tbvPayjnlsDao.selectById(tbvPayjnls);
             if (EmptyChecker.isEmpty(tbvPayjnls)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "无此交易，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "无此交易，请联系客服");
             }
             String fee = tbvPayjnls.getFee().toString();
             String amount = tbvPayjnls.getAmount().toString();
@@ -99,7 +99,7 @@ public class ServicesWeiXinMsgPushImpl implements BusinessInterface {
             tbvCustomer.setTid(tid);
             tbvCustomer = tbvCustomerDao.selectById(tbvCustomer);
             if (EmptyChecker.isEmpty(tbvCustomer)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "无此交易，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "无此交易，请联系客服");
             }
             String openid = tbvCustomer.getOpenid();
 
@@ -108,7 +108,7 @@ public class ServicesWeiXinMsgPushImpl implements BusinessInterface {
             tbvBranchParam.setBranchid(branchId);
             tbvBranchParam = tbvBranchParamDao.selectById(tbvBranchParam);
             if (EmptyChecker.isEmpty(tbvBranchParam)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "交易异常，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "交易异常，请联系客服");
             }
             String taDesc = tbvBranchParam.getTadesc();
             /** 收款  */

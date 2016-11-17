@@ -69,8 +69,7 @@ public class ServicesTest {
     public static JSONObject packageVerifyCreditRank(JSONObject item) {
 
         item.put(Console_Column.SMS_SERVERJYM, Console_Server_Jym.JYM_WXDOWNPUSH);
-        // item.put(Console_Column.SMS_SERVERJYM,
-        // Console_Server_Jym.JYM_SEARCHORDERID);
+//        item.put(Console_Column.SMS_SERVERJYM, Console_Server_Jym.JYM_SEARCHORDERID);
         // // item.put(Console_Column.SMS_SERVERJYM,
         // // Console_Server_Jym.JYM_SMZF100001);
         // item.put("REQMSGID", "2016083118425400000077");
