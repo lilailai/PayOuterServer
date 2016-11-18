@@ -245,8 +245,8 @@ public class RyxCallBackServlet extends HttpServlet {
                                 LogPay.error("[未定义" + downPushObj + "]的对像或者没有注解");
                                 throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.SYSNOSERVEDESC);
                             }
-                            BusinessInterface downPushBean = (BusinessInterface) obj;
-                            String rs = downPushBean.execute(sendData.toString());
+                            BusinessInterface downPushBean = (BusinessInterface) downPushObj;
+                            String rs = downPushBean.execute(pushData.toString());
                             if (EmptyChecker.isEmpty(rs)) {
                                 LogPay.info("消息下推无返回");
                             } else {
