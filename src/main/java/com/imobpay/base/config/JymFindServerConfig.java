@@ -47,6 +47,8 @@ public final class JymFindServerConfig {
         item.put(Console_Server_Jym.JYM_SMZF100001, "servicesWeiXinSFZFImpl");
         /** 微信支付请求订单 */
         item.put(Console_Server_Jym.JYM_SMZF100002, "servicesWeiXinQueryImpl");
+        /** 微信支付下推 */
+        item.put(Console_Server_Jym.JYM_WXDOWNPUSH, "servicesWeiXinMsgPushImpl");
 
     }
 

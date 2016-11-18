@@ -240,7 +240,7 @@ public class RyxCallBackServlet extends HttpServlet {
                             pushData.put(Console_Column.REQMSGID, reqMsgId);
                             pushData.put(Console_Column.WX_MSG_TRADE_TYPE, "WxMsgTrade");
                             pushData.put(Console_Column.WX_MSG_TEM_CONTENT_COUNT, "3");
-                            Object downPushObj = applicationContext.getBean("servicesWeiXinMsgPush");
+                            Object downPushObj = applicationContext.getBean("servicesWeiXinMsgPushImpl");
                             if (EmptyChecker.isEmpty(downPushObj)) {
                                 LogPay.error("[未定义" + downPushObj + "]的对像或者没有注解");
                                 throw new QTException(Console_ErrCode.PARAM_EMPTY, Console_ErrCode.SYSNOSERVEDESC);

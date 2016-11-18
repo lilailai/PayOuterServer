@@ -11,6 +11,8 @@
  */
 package com.imobpay.base.entity;
 
+import java.io.Serializable;
+
 /**
  * <pre>
  * ClassName: TbvPayjnls <br/> 
@@ -20,7 +22,7 @@ package com.imobpay.base.entity;
  * @since JDK 1.6 PayUserServer 1.0 . <br/>
  * </pre>
  */
-public class TbvPayjnls extends BaseEntity {
+public class TbvPayjnls  implements Serializable {
 
     /** 序号 */
     private static final long serialVersionUID = 1L;
