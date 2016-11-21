@@ -30,7 +30,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.config.JymFindServerConfig;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_ErrCode;
-import com.imobpay.base.entity.ReultErrorBean;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
@@ -83,7 +82,8 @@ public class ConsumerMessageListener implements MessageListener {
         String respStr = "";
         String correlationID = "";
         String jsonStr = "";
-        Object jym=null;
+        JSONObject errorJson = new JSONObject();
+        Object jym = null;
         try {
             if (message instanceof javax.jms.TextMessage) {
                 TextMessage textMsg = (TextMessage) message;
@@ -139,20 +139,20 @@ public class ConsumerMessageListener implements MessageListener {
             LogPay.info("执行业务时间[" + (System.currentTimeMillis() - lb) + "]");
         } catch (QTException e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean)applicationContext.getBean(reutlBeanType);
-            respStr = serverObj.returnBeanJson(e.getRespCode(), e.getRespMsg());
-        }   catch (Exception e) {
+            errorJson.put(Console_Column.P_MSG_CODE, e.getRespCode());
+            errorJson.put(Console_Column.P_MSG_TEXT, e.getRespMsg());
+            respStr = errorJson.toString();
+        } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean)applicationContext.getBean(reutlBeanType);
-            respStr = serverObj.returnBeanJson(Console_ErrCode.SYSERROR, Console_ErrCode.SYSNOERRORDESC);
+            errorJson.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_88_ERR_TXN);
+            errorJson.put(Console_Column.P_MSG_TEXT, Console_ErrCode.TRANS_ERROR);
+            respStr = errorJson.toString();
         } catch (Throwable e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean)applicationContext.getBean(reutlBeanType);
-            respStr = serverObj.returnBeanJson(Console_ErrCode.SYSERROR, Console_ErrCode.SYSNOERRORDESC);
-        }  finally {
+            errorJson.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_88_ERR_TXN);
+            errorJson.put(Console_Column.P_MSG_TEXT, Console_ErrCode.TRANS_ERROR);
+            respStr = errorJson.toString();
+        } finally {
             if ("true".equalsIgnoreCase(flagReturn)) {
                 JSONObject json = (JSONObject) JSONObject.parseObject(respStr);
                 byte[] content = null;

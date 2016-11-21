@@ -9,8 +9,9 @@
 	<!-- <bean class="com.imobpay.base.servlet.InitServlet" init-method="initServlet" 
 		/> -->
 	<bean id="afterPostProcess" class="com.imobpay.base.servlet.BaseBeanPostProcessor">
-		<property name="servlet" value="com.imobpay.base.servlet.PayServerServlet" />
-		<property name="contextPath" value="/payServer" />
+		<property name="payServlet" value="com.imobpay.base.servlet.PayServerServlet" />
+		<property name="payCallBackServlet" value="com.imobpay.base.servlet.RyxCallBackServlet" />
+		<property name="contextPath" value="/PayServer" />
 	</bean>
 
 	<bean id="Server" class="org.eclipse.jetty.server.Server"
@@ -18,7 +19,7 @@
 		<property name="connectors">
 			<list>
 				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
-					<property name="port" value="8888" />
+					<property name="port" value="8282" />
 				</bean>
 			</list>
 		</property>

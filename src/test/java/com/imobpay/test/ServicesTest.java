@@ -16,7 +16,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_Server_Jym;
+import com.imobpay.base.exception.QTException;
 import com.imobpay.base.services.PayOuterServer;
+import com.imobpay.base.services.PayOuterServerImpl;
+import com.imobpay.base.services.impl.ServicesWeiXinMsgPushImpl;
 
 /** 
  * <pre>
@@ -47,7 +50,7 @@ public class ServicesTest {
         System.out.println(System.getProperty("user.dir"));
         System.out.println(System.getProperty("workdir"));
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring-context.xml" });
-        PayOuterServer us = (PayOuterServer) context.getBean("weiXinServerImpl");
+        PayOuterServerImpl us = (PayOuterServerImpl) context.getBean("payOuterServerImpl");
         JSONObject item = new JSONObject();
         packageVerifyCreditRank(item);
         String execute = us.execute(item.toString());
@@ -65,32 +68,33 @@ public class ServicesTest {
      */
     public static JSONObject packageVerifyCreditRank(JSONObject item) {
 
-        item.put(Console_Column.SMS_SERVERJYM, Console_Server_Jym.JYM_SEARCHORDERID);
+        item.put(Console_Column.SMS_SERVERJYM, Console_Server_Jym.JYM_WXDOWNPUSH);
 //        item.put(Console_Column.SMS_SERVERJYM, Console_Server_Jym.JYM_SEARCHORDERID);
-//        // item.put(Console_Column.SMS_SERVERJYM,
-//        // Console_Server_Jym.JYM_SMZF100001);
-//        item.put("REQMSGID", "2016083118425400000077");
-//        item.put("WX_MSG_TEM_CONTENT_COUNT", "3");
-//        item.put("WX_MSG_TRADE_TYPE", "WxMsgTrade");
-//        // item.put("P_TRANCODE", "SMZF100001");
-//        item.put("SCENE", "1");
-//        item.put("TOTALAMOUNT", "1");
-//        // item.put("ORIREQMSGID", "201609011740079E");
-//        item.put("REQMSGID", Tools.getOnlyPK());
-//        item.put("MERCHANTCODE", "qt0000000000000");
-//        item.put("SUBJECT", "测试订单");
-//        item.put("MSGTYPE", "01");
-//        item.put("SHOPNAME", "01");
-//        item.put("TOTALFEE", "100");
-//        item.put("REQDATE", DateFormatUtils.format(new Date(), "yyyyMMddHHmmss"));
-//        item.put("PAYWAY", "WXZF");
-        
-        
-        
+        // // item.put(Console_Column.SMS_SERVERJYM,
+        // // Console_Server_Jym.JYM_SMZF100001);
+        // item.put("REQMSGID", "2016083118425400000077");
+        // item.put("WX_MSG_TEM_CONTENT_COUNT", "3");
+        // item.put("WX_MSG_TRADE_TYPE", "WxMsgTrade");
+        // // item.put("P_TRANCODE", "SMZF100001");
+        // item.put("SCENE", "1");
+        // item.put("TOTALAMOUNT", "1");
+        // // item.put("ORIREQMSGID", "201609011740079E");
+        // item.put("REQMSGID", Tools.getOnlyPK());
+        // item.put("MERCHANTCODE", "qt0000000000000");
+        // item.put("SUBJECT", "测试订单");
+        // item.put("MSGTYPE", "01");
+        // item.put("SHOPNAME", "01");
+        // item.put("TOTALFEE", "100");
+        // item.put("REQDATE", DateFormatUtils.format(new Date(),
+        // "yyyyMMddHHmmss"));
+        // item.put("PAYWAY", "WXZF");
+
         item.put("ORDERID", "WXZF");
         item.put("MERCHANTCODE", "WXZF");
-        item.put("MSGTYPE", "WXZF");
-      
+        item.put("REQMSGID", "2016090817184900000267");
+        item.put("WX_MSG_TRADE_TYPE", "WxMsgTrade");
+        item.put("WX_MSG_TEM_CONTENT_COUNT", "3");
+
         return item;
     }
 }

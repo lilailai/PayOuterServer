@@ -3,6 +3,9 @@
 "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<typeAliases>
+		<typeAlias type="com.imobpay.base.entity.TbvPayjnls" alias="tbTbvPayjnlsInfo" />
+	</typeAliases>
 	<mappers>
 		<mapper resource="com/imobpay/base/sql/mapper/TbvBranchParamMapper.xml" />
 		<mapper resource="com/imobpay/base/sql/mapper/TbvPayjnlsMapper.xml" />

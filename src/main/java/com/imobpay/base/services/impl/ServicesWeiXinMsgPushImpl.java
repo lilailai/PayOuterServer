@@ -42,7 +42,7 @@ import com.imobpay.base.util.HttpHelper;
  *
  */
 @Service
-public class ServicesWeiXinMsgPush implements BusinessInterface {
+public class ServicesWeiXinMsgPushImpl implements BusinessInterface {
     /** 微信参数表 */
     @Resource
     TbvPayjnlsDao<TbvPayjnls>         tbvPayjnlsDao;
@@ -60,10 +60,12 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
     public String execute(String reqParame) throws QTException {
         /** 接收请求报文  */
         JSONObject reqJson = JSONObject.parseObject(reqParame);
+        /** 返回报文对象 */
         JSONObject retJson = new JSONObject();
+        /** 校验必传参数  */
         EmptyChecker.checkEmptyJson(reqJson, Console_Column.REQMSGID, Console_Column.WX_MSG_TRADE_TYPE, Console_Column.WX_MSG_TEM_CONTENT_COUNT);
 
-        /** 接收参数  */
+        /** 接收参数订单号，下推模板类型，模板内容个数  */
         String reqMsgId = reqJson.getString(Console_Column.REQMSGID);
         String tradeType = reqJson.getString(Console_Column.WX_MSG_TRADE_TYPE);
         String contentCnt = reqJson.getString(Console_Column.WX_MSG_TEM_CONTENT_COUNT);
@@ -74,14 +76,15 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             tbvPayjnls.setOrderId(reqMsgId);
             tbvPayjnls = tbvPayjnlsDao.selectById(tbvPayjnls);
             if (EmptyChecker.isEmpty(tbvPayjnls)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "无此交易，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "无此交易，请联系客服");
             }
             String fee = tbvPayjnls.getFee().toString();
             String amount = tbvPayjnls.getAmount().toString();
             String taaccount = tbvPayjnls.getTaaccount();
             String localdate = tbvPayjnls.getLocaldate();
             String localtime = tbvPayjnls.getLocaltime();
-            String issuingAmount = tbvPayjnls.getIssuingAmount().toString();
+            Integer issuingAmountint = tbvPayjnls.getIssuingAmount();
+            String issuingAmount = issuingAmountint == null ? "" : issuingAmountint.toString();
             String tid = tbvPayjnls.getTid();
             String accountno = tbvPayjnls.getAccountno();
             String paytype = tbvPayjnls.getPaytype();
@@ -96,15 +99,16 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             tbvCustomer.setTid(tid);
             tbvCustomer = tbvCustomerDao.selectById(tbvCustomer);
             if (EmptyChecker.isEmpty(tbvCustomer)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "无此交易，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "无此交易，请联系客服");
             }
             String openid = tbvCustomer.getOpenid();
 
             /** 查询公众号描述 */
             TbvBranchParam tbvBranchParam = new TbvBranchParam();
+            tbvBranchParam.setBranchid(branchId);
             tbvBranchParam = tbvBranchParamDao.selectById(tbvBranchParam);
             if (EmptyChecker.isEmpty(tbvBranchParam)) {
-                throw new QTException(Console_ErrCode.TRANS_ERROR, "交易异常，请联系客服");
+                throw new QTException(Console_ErrCode.RESP_CODE_88_ERR_TXN, "交易异常，请联系客服");
             }
             String taDesc = tbvBranchParam.getTadesc();
             /** 收款  */
@@ -172,8 +176,12 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
             String payServerUrl = tbvSysParam.getParamvalue();
             String method = HttpHelper.post(payServerUrl, firstValJson.toString(), "UTF-8", "UTF-8");
             LogPay.info("微信消息下推返回报文:" + method);
-            retJson.put(Console_Column.P_MSG_CODE, "0000");
-            retJson.put(Console_Column.P_MSG_TEXT, "下推成功");
+            if (EmptyChecker.isEmpty(method)) {
+                throw new QTException(Console_ErrCode.RESP_CODE_99_ERR_UNKNOW, "下推失败");
+            }
+            JSONObject rs = JSONObject.parseObject(method);
+            retJson.put(Console_Column.P_MSG_CODE, rs.getString("msgcode"));
+            retJson.put(Console_Column.P_MSG_TEXT, rs.getString("msgtext"));
         } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
             retJson.put(Console_Column.P_MSG_CODE, "0099");

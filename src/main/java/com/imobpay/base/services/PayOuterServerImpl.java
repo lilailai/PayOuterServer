@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.config.JymFindServerConfig;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_ErrCode;
-import com.imobpay.base.entity.ReultErrorBean;
 import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
@@ -56,6 +55,7 @@ public class PayOuterServerImpl implements PayOuterServer {
     public String execute(String json) {
         long l = System.currentTimeMillis();
         String resultJson = "";
+        JSONObject errorJson = new JSONObject();
         Object jym = null;
         try {
             JSONObject param = JSONObject.parseObject(json);
@@ -87,19 +87,19 @@ public class PayOuterServerImpl implements PayOuterServer {
             resultJson = bean.execute(json);
         } catch (QTException e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean) applicationContext.getBean(reutlBeanType);
-            resultJson = serverObj.returnBeanJson(e.getRespCode(), e.getRespMsg());
+            errorJson.put(Console_Column.P_MSG_CODE, e.getRespCode());
+            errorJson.put(Console_Column.P_MSG_TEXT, e.getRespMsg());
+            resultJson = errorJson.toString();
         } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean) applicationContext.getBean(reutlBeanType);
-            resultJson = serverObj.returnBeanJson(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
+            errorJson.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_88_ERR_TXN);
+            errorJson.put(Console_Column.P_MSG_TEXT, Console_ErrCode.TRANS_ERROR);
+            resultJson = errorJson.toString();
         } catch (Throwable e) {
             LogPay.error(e.getMessage(), e);
-            String reutlBeanType = JymFindServerConfig.getServerResultType(jym);
-            ReultErrorBean serverObj = (ReultErrorBean) applicationContext.getBean(reutlBeanType);
-            resultJson = serverObj.returnBeanJson(Console_ErrCode.RESP_CODE_88_ERR_TXN, Console_ErrCode.TRANS_ERROR);
+            errorJson.put(Console_Column.P_MSG_CODE, Console_ErrCode.RESP_CODE_88_ERR_TXN);
+            errorJson.put(Console_Column.P_MSG_TEXT, Console_ErrCode.TRANS_ERROR);
+            resultJson = errorJson.toString();
         } finally {
             LogPay.info("返回内容[" + (System.currentTimeMillis() - l) + "]:" + resultJson);
         }
