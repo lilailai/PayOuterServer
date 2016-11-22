@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvTemplateNewsDao">
+
+
+	<sql id="paramSql">
+		<!-- 此处一定要增加一个查询 -->
+		<if test="nums !=null and nums !=''">
+			AND NUMS = #{nums}
+		</if>
+		<if test="createtime !=null and createtime !=''">
+			AND CREATETIME = #{createtime}
+		</if>
+		<if test="template !=null and template !=''">
+			AND TEMPLATE = #{template}
+		</if>
+		<if test="status !=null and status !=''">
+			AND STATUS = #{status}
+		</if>
+		<if test="dealtype !=null and dealtype !=''">
+			AND DEALTYPE = #{dealtype}
+		</if>
+		<if test="branchid !=null and branchid !=''">
+			AND BRANCHID = #{branchid}
+		</if>
+		<if test="templateid !=null and templateid !=''">
+			AND TEMPLATEID = #{templateid}
+		</if>
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.TbvTemplateNews" id="paramIdTbvTemplateNews">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="nums" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="createtime" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="template" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="dealtype" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="branchid" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="templateid" javaType="String" jdbcType="VARCHAR" mode="IN" />
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvTemplateNews" id="resultTbTbvTemplateNews">
+		<result column="NUMS" property="nums" javaType="Integer" jdbcType="NUMERIC" />
+		<result column="CREATETIME" property="createtime" javaType="String" jdbcType="VARCHAR" />
+		<result column="TEMPLATE" property="template" javaType="String" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="DEALTYPE" property="dealtype" javaType="String" jdbcType="VARCHAR" />
+		<result column="BRANCHID" property="branchid" javaType="String" jdbcType="VARCHAR" />
+		<result column="TEMPLATEID" property="templateid" javaType="String" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvTemplateNews" resultMap="resultTbTbvTemplateNews">
+		SELECT * FROM TBV_TEMPLATE_NEWS WHERE ROWNUM = 1
+		<include refid="paramSql"></include>
+	</select>
+
+
+</mapper>
