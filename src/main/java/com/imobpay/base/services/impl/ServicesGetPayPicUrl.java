@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_ErrCode;
-import com.imobpay.base.console.OuterConsoleColum;
+import com.imobpay.base.console.OuterConsoleColumn;
 import com.imobpay.base.dao.PrepClientVersionDao;
 import com.imobpay.base.dao.TbvCardDao;
 import com.imobpay.base.dao.TbvSysParamDao;
@@ -177,8 +177,14 @@ public class ServicesGetPayPicUrl implements BusinessInterface {
         } else {
             respJson.put("payPicUrl", taCard.getUrl());
         }
-
-        return respJson.toString();
+        
+        /** 组装成功信息返回 */
+        JSONObject retJson = new JSONObject();
+        retJson.put(Console_Column.RESULTBEAN, respJson.toString());
+        retJson.put(Console_Column.MSG_CODE, Console_ErrCode.SUCCESS);
+        retJson.put(Console_Column.MSG_TEXT, Console_ErrCode.SUCCESSDESC);
+        return retJson.toString();
+        
     }
 
     /**
@@ -203,7 +209,7 @@ public class ServicesGetPayPicUrl implements BusinessInterface {
 
         /** 查询数据库配置信息 */
         TbvSysParam bean = new TbvSysParam();
-        bean.setParamname(OuterConsoleColum.VIPAPPUSER);
+        bean.setParamname(OuterConsoleColumn.VIPAPPUSER);
         TbvSysParam param = tbvSysParame.selectById(bean);
 
         /** 判断是否非空 */
