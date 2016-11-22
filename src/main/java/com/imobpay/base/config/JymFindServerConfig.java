@@ -51,6 +51,9 @@ public final class JymFindServerConfig {
         item.put(Console_Server_Jym.JYM_TAGETPAYPICURL, "servicesGetPayPicUrl");
         /** 微信支付下推 */
         item.put(Console_Server_Jym.JYM_WXDOWNPUSH, "servicesWeiXinMsgPushImpl");
+        /** 微信消息推送 */
+        item.put(Console_Server_Jym.JYM_TAWEIXINMSGPUSH, "servicesWeiXinMsgPush");
+        
 
     }
 
