@@ -53,6 +53,8 @@ public final class JymFindServerConfig {
         item.put(Console_Server_Jym.JYM_WXDOWNPUSH, "servicesWeiXinMsgPushImpl");
         /** 微信消息推送 */
         item.put(Console_Server_Jym.JYM_TAWEIXINMSGPUSH, "servicesWeiXinMsgPush");
+        /** 微信用户抽奖 */
+        item.put(Console_Server_Jym.JYM_TAGETWINPICURL, "ServicesGetWinPicUrl");
         
 
     }
