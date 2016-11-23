@@ -40,5 +40,9 @@ public class OuterConsoleColumn {
     public static final String DATA                     = "data";
     /** 详情url */
     public static final String URL                      = "url";
+    /** 微信用户openid */
+    public static final String OPENID                   = "OPENID";
+    /** 微信公众号 */
+    public static final String PUB_ACCOUNT              = "pubAccount";
 }
 
