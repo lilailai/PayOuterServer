@@ -70,13 +70,13 @@ public class PayRedirectServlet extends HttpServlet {
         super.init(config);
         /** 获取应用环境 */
         applicationContext = (ApplicationContext) (this.getServletContext().getAttribute("applicationContext"));
-        
+
         /** 填充数据库操作对象 */
-        tbvCusDao=(TbvCustomerDao<TbvCustomer>) applicationContext.getBean("tbvCustomerDao");
-        payUserDao=(PayuserDao<Payuser>) applicationContext.getBean("payuserDao");
-        tbvCardDao=(TbvCardDao<TbvCard>) applicationContext.getBean("tbvCardDao");
-        tbvSysParame=(TbvSysParamDao<TbvSysParam>) applicationContext.getBean("tbvSysParamDao");
-        tbvBranchParmDao=(TbvBranchParamDao<TbvBranchParam>) applicationContext.getBean("tbvBranchParamDao");
+        tbvCusDao = (TbvCustomerDao<TbvCustomer>) applicationContext.getBean("tbvCustomerDao");
+        payUserDao = (PayuserDao<Payuser>) applicationContext.getBean("payuserDao");
+        tbvCardDao = (TbvCardDao<TbvCard>) applicationContext.getBean("tbvCardDao");
+        tbvSysParame = (TbvSysParamDao<TbvSysParam>) applicationContext.getBean("tbvSysParamDao");
+        tbvBranchParmDao = (TbvBranchParamDao<TbvBranchParam>) applicationContext.getBean("tbvBranchParamDao");
     }
 
     /** serialVersionUID */
@@ -142,7 +142,7 @@ public class PayRedirectServlet extends HttpServlet {
             LogPay.info("交易耗时:" + (System.currentTimeMillis() - l));
         }
     }
-    
+
     /**
      * 
      * 【方法名】    : getSendRedirectUrl. <br/> 
@@ -305,7 +305,7 @@ public class PayRedirectServlet extends HttpServlet {
         }
 
     }
-    
+
     /**
      * 
      * 【方法名】    :retAppUserParam. <br/> 
@@ -456,5 +456,5 @@ public class PayRedirectServlet extends HttpServlet {
     public void setTbvBranchParmDao(TbvBranchParamDao<TbvBranchParam> tbvBranchParmDao) {
         this.tbvBranchParmDao = tbvBranchParmDao;
     }
-    
+
 }
