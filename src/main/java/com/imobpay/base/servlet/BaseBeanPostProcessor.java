@@ -21,6 +21,8 @@ public class BaseBeanPostProcessor implements BeanPostProcessor {
     private String     payServlet;
     /** payCallBackServlet */
     private String     payCallBackServlet;
+    /** payRedirectServlet */
+    private String     payRedirectServlet;
     /** 项目的根目录 */
     private String     contextPath;
     /** 上下文对象 */
@@ -42,12 +44,32 @@ public class BaseBeanPostProcessor implements BeanPostProcessor {
             try {
                 servletHandler.addServlet((Class<? extends Servlet>) Class.forName(payServlet), "/SmzfServer.do");
                 servletHandler.addServlet((Class<? extends Servlet>) Class.forName(payCallBackServlet), "/CallBack.do");
+                servletHandler.addServlet((Class<? extends Servlet>) Class.forName(payRedirectServlet), "/Redirect.do");
             } catch (ClassNotFoundException e) {
                 LogPay.error(e.getMessage());
             }
             return servletHandler;
         }
         return bean;
+    }
+
+    
+    /**
+     * 描述：获取属性值.<br/>
+     * 创建人：HuaiYu.Wen <br/>
+     * 返回类型：@return payRedirectServlet .<br/>
+     */
+    public String getPayRedirectServlet() {
+        return payRedirectServlet;
+    }
+
+    /**
+    * 创建人：HuaiYu.Wen <br/>
+    * 创建时间：2016年11月23日 下午4:40:23 <br/>
+    * 参数: @param  payRedirectServlet 设置值.  <br/>
+    */
+    public void setPayRedirectServlet(String payRedirectServlet) {
+        this.payRedirectServlet = payRedirectServlet;
     }
 
     /**
