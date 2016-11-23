@@ -19,5 +19,6 @@
 		<mapper resource="com/imobpay/base/sql/mapper/TbvCardMapper.xml" />
 		<mapper resource="com/imobpay/base/sql/mapper/PrepClientVersionMapper.xml" />
 		<mapper resource="com/imobpay/base/sql/mapper/TbvTemplateNewsMapper.xml" />
+		<mapper resource="com/imobpay/base/sql/mapper/TbvActivityLotteryMapper.xml" />
 	</mappers>
 </configuration>

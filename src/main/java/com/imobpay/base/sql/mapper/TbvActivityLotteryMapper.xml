@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imobpay.base.dao.TbvActivityLotteryDao">
+
+
+	<sql id="paramSql">
+		<!-- 此处一定要增加一个查询 -->
+		<if test="remark !=null and remark !=''">
+			AND REMARK = #{remark}
+		</if>
+		<if test="openid !=null and openid !=''">
+			AND OPENID = #{openid}
+		</if>
+		<if test="cardty !=null and cardty !=''">
+			AND CARDTY = #{cardty}
+		</if>
+		<if test="checktime !=null and checktime !=''">
+			AND CHECKTIME = #{checktime}
+		</if>
+		<if test="status !=null and status !=''">
+			AND STATUS = #{status}
+		</if>
+		<if test="cardurl !=null and cardurl !=''">
+			AND CARDURL = #{cardurl}
+		</if>
+		<if test="id !=null and id !=''">
+			AND ID = #{id}
+		</if>
+		<!-- 2016年10月13日15:48:09 由madman添加 -->
+		<if test="pubAccount !=null and pubAccount !=''">
+			AND PUBACCOUNT = #{pubAccount}
+		</if>
+	</sql>
+
+	<parameterMap type="com.imobpay.base.entity.TbvActivityLottery" id="paramIdTbvActivityLottery">
+		<parameter property="pageflag" javaType="Boolean" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="curPage" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="pageSize" javaType="Integer" jdbcType="NUMERIC" mode="IN" />
+		<parameter property="remark" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="openid" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="cardty" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="checktime" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="status" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="cardurl" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="id" javaType="String" jdbcType="VARCHAR" mode="IN" />
+		<parameter property="pubAccount" javaType="String" jdbcType="VARCHAR" mode="IN" />
+
+	</parameterMap>
+
+	<resultMap type="com.imobpay.base.entity.TbvActivityLottery" id="resultTbTbvActivityLottery">
+		<result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR" />
+		<result column="OPENID" property="openid" javaType="String" jdbcType="VARCHAR" />
+		<result column="CARDTY" property="cardty" javaType="String" jdbcType="VARCHAR" />
+		<result column="CHECKTIME" property="checktime" javaType="String" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" javaType="String" jdbcType="VARCHAR" />
+		<result column="CARDURL" property="cardurl" javaType="String" jdbcType="VARCHAR" />
+		<result column="ID" property="id" javaType="String" jdbcType="VARCHAR" />
+		<result column="PUBACCOUNT" property="pubAccount" javaType="String" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<select id="selectById" parameterMap="paramIdTbvActivityLottery" resultMap="resultTbTbvActivityLottery">
+		SELECT * FROM TBV_ACTIVITY_LOTTERY WHERE ROWNUM = 1
+		<include refid="paramSql"></include>
+	</select>
+
+	<select id="selectActiveLottery" resultMap="resultTbTbvActivityLottery" parameterMap="paramIdTbvActivityLottery">
+		select * from (select * from TBV_ACTIVITY_LOTTERY where status='0'
+		<include refid="paramSql"></include>
+		order by dbms_random.value )
+		where
+		rownum=1
+	</select>
+
+	<update id="updateCodeLottery">
+		UPDATE TBV_ACTIVITY_LOTTERY T SET T.STATUS=#{status,jdbcType=VARCHAR}
+		<if test="openid !=null and openid !=''">
+			,T.OPENID=#{openid,jdbcType=VARCHAR}
+		</if>
+		<if test="checktime !=null and checktime !=''">
+			,T.CHECKTIME=#{checktime,jdbcType=VARCHAR}
+		</if>
+		WHERE
+		ID=#{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateCodeStatus">
+		update TBV_ACTIVITY_LOTTERY t set t.status='0' where t.checktime &lt; to_char(sysdate,'YYYYMMDDHH24MISS') and t.status='1'
+	</update>
+
+</mapper>
