@@ -16,10 +16,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.alibaba.fastjson.JSONObject;
 import com.imobpay.base.console.Console_Column;
 import com.imobpay.base.console.Console_Server_Jym;
-import com.imobpay.base.exception.QTException;
-import com.imobpay.base.services.PayOuterServer;
 import com.imobpay.base.services.PayOuterServerImpl;
-import com.imobpay.base.services.impl.ServicesWeiXinMsgPushImpl;
 
 /** 
  * <pre>
