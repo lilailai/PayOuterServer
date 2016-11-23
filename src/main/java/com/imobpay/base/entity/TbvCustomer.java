@@ -61,6 +61,26 @@ public class TbvCustomer extends BaseEntity {
     private String            mobile;
     /** 属性描述： */
     private String            tid;
+    /** 属性描述：TA卡号mac */
+    private String            taaccountmac;
+    
+    /**
+     * 描述：获取属性值.<br/>
+     * 创建人：HuaiYu.Wen <br/>
+     * 返回类型：@return taaccountmac .<br/>
+     */
+    public String getTaaccountmac() {
+        return taaccountmac;
+    }
+
+    /**
+    * 创建人：HuaiYu.Wen <br/>
+    * 创建时间：2016年11月23日 下午3:47:41 <br/>
+    * 参数: @param  taaccountmac 设置值.  <br/>
+    */
+    public void setTaaccountmac(String taaccountmac) {
+        this.taaccountmac = taaccountmac;
+    }
 
     /**
      * 描述：获取属性值-经营地区.<br/>
