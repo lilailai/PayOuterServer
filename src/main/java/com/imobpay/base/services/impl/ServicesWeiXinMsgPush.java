@@ -23,7 +23,7 @@ import com.imobpay.base.exception.QTException;
 import com.imobpay.base.iface.BusinessInterface;
 import com.imobpay.base.log.LogPay;
 import com.imobpay.base.util.EmptyChecker;
-import com.imobpay.base.util.HttpHelper;
+import com.imobpay.base.util.HttpsUtil;
 
 /**
  * 
@@ -116,7 +116,7 @@ public class ServicesWeiXinMsgPush implements BusinessInterface {
         LogPay.info("微信消息下推请求报文:" + j.toString());
         String method =Console_Column.EMPTY; 
         try {
-            method = HttpHelper.post(sendUrl, j.toString(), HttpHelper.inEncoding, HttpHelper.inEncoding);
+            method = HttpsUtil.getMethod(sendUrl, j.toString());
         } catch (Exception e) {
             LogPay.error(e.getMessage(), e);
         }
