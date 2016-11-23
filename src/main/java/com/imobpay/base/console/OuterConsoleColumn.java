@@ -44,5 +44,17 @@ public class OuterConsoleColumn {
     public static final String OPENID                   = "OPENID";
     /** 微信公众号 */
     public static final String PUB_ACCOUNT              = "pubAccount";
+    /** TA号 */
+    public static final String TAID                     = "taid";
+    /** 微信支付 APP跳转 */
+    public static final String PARAME_PAY_APP           = "WxPayApp";
+    /** 微信注册 */
+    public static final String PARAME_REG               = "WxReg";
+    /** TA卡用户状态 1 正常 2冻结 */
+    public static final String TA_STATUS_1              = "1";
+    /** 微信支付 */
+    public static final String PARAME_PAY               = "WxPay";
+    /** 微信冻结 */
+    public static final String PARAME_DJ                = "WxDj";
 }
 
